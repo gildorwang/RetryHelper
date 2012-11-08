@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Globalization;
 
-namespace RetryHelper
+namespace Retry
 {
     public static class Extensions
     {

@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 
-namespace RetryHelper
+namespace Retry
 {
     /// <summary>
     /// Represents the task to be retried.

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace RetryHelper
+namespace Retry
 {
     /// <summary>
     /// Help retry a delegate until a given condition is met.
