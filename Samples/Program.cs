@@ -51,7 +51,7 @@ namespace Samples
             RetryHelper.Instance.Try(() => TryGetSomething())
                 .WithMaxTryCount(20)
                 .OnSuccess(result => Trace.TraceInformation(string.Format("Get result {0}.", result)))
-                .OnTimeout(lastResult => Trace.TraceError("Did not get result under 0.1 in 10 times."))
+                .OnTimeout(lastResult => Trace.TraceError("Did not get result under 0.1 in 20 times."))
                 .Until(result => result < 0.1);
 
 

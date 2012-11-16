@@ -58,7 +58,7 @@ Examples:
     RetryHelper.Instance.DefaultTryInterval = TimeSpan.FromMilliseconds(100);
 
 
-### Get another RetryHelper instance with custom TraceSource and seperate configration
+### Get another RetryHelper instance with custom TraceSource and separate configration
 
     var retryHelper = new RetryHelper(new TraceSource("MyTraceSource"))
     {
@@ -69,4 +69,4 @@ Examples:
 
 LICENSE
 =======
-[Apache 2.0 License]
+[Apache 2.0 License](https://github.com/gildorwang/RetryHelper/blob/master/LICENSE.md)

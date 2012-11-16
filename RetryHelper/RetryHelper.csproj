@@ -40,6 +40,9 @@
     <Compile Include="RetryHelper.cs" />
     <Compile Include="RetryTask.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="RetryHelper.nuspec" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
