@@ -42,9 +42,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OnFailureTest.cs" />
     <Compile Include="Generator.cs" />
+    <Compile Include="OnSuccessTest.cs" />
+    <Compile Include="OnTimeoutTest.cs" />
     <Compile Include="RetryHelperTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TryUntilExternalConditionTest.cs" />
+    <Compile Include="TryUntilNoExceptionTest.cs" />
+    <Compile Include="TryUntilTest.cs" />
+    <Compile Include="TryWithIntervalTest.cs" />
+    <Compile Include="TryWithMaxCountTest.cs" />
+    <Compile Include="TryWithTimeLimitTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
