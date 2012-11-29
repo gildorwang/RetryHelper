@@ -31,12 +31,17 @@ Examples:
     // Can also constrain the total try time
     RetryHelper.Instance.Try(() => TryGetSomething()).WithTimeLimit(TimeSpan.FromSeconds(10)).Until(result => result < 0.1);
 
-    // Specify the extra success/fail action
+    // Specify the extra success/fail/timeout action
     RetryHelper.Instance.Try(() => TryGetSomething())
         .WithMaxTryCount(20)
         .OnSuccess(result => Trace.TraceInformation(string.Format("Get result {0}.", result)))
-        .OnTimeout(lastResult => Trace.TraceError("Did not get result under 0.1 in 10 times."))
+        .OnFailure(result => Trace.TraceWarning(string.Format("Try failed. Got {0}", result)))
+        .OnTimeout(lastResult => Trace.TraceError("Did not get result under 0.1 in 20 times."))
         .Until(result => result < 0.1);
+
+- OnSuccess: Executed after the condition is met.
+- OnFailure: Executed after each failed attempt and before the next attempt.
+- OnTimeout: Executed after all allowed attempts are failed.
 
 
 ### Example 2: Retry method *TryDoSomething* until there's no exception thrown.
