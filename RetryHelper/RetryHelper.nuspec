@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/gildorwang/RetryHelper</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
+    <releaseNotes>Pass tried count to OnSuccess, OnTimeOut and OnFailure handlers.</releaseNotes>
     <copyright>Copyright 2012 $author$</copyright>
     <tags>C# Retry RetryHelper</tags>
   </metadata>

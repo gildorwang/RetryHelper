@@ -58,7 +58,7 @@ namespace Tests
             }
             stream.Seek(0, SeekOrigin.Begin);
             var binaryReader = new BinaryReader(stream);
-            for (int i = 0; i < len * 3; i++)
+            for(int i = 0; i < len * 3; i++)
             {
                 var b = RetryHelper.Instance
                                    .Try(() => binaryReader.ReadByte())
@@ -67,6 +67,22 @@ namespace Tests
                                    .UntilNoException<EndOfStreamException>();
                 Console.Write("{0} ", b);
             }
+        }
+
+        [Test]
+        public void TestOnFailureWithTryCount()
+        {
+            var times = 5;
+            var generator = new Generator(times);
+            var onFailureTriggered = 0;
+            _target.Try(() => generator.Next())
+                   .OnFailure((t, count) =>
+                   {
+                       Expect(t, False);
+                       Expect(count, EqualTo(++onFailureTriggered));
+                   })
+                   .Until(t => t);
+            Expect(onFailureTriggered, EqualTo(times));
         }
     }
 }

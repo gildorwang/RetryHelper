@@ -44,5 +44,26 @@ namespace Tests
                 Throws.TypeOf<TimeoutException>());
             Expect(onTimeoutTriggered, True);
         }
+
+        [Test]
+        [Timeout(1000)]
+        public void TestOnTimeoutWithTriedCount()
+        {
+            var times = 5;
+            var generator = new Generator(times);
+            var onTimeoutTriggered = false;
+            var maxTryCount = times - 1;
+            Expect(() =>
+                _target.Try(() => generator.Next())
+                       .WithMaxTryCount(maxTryCount)
+                       .OnTimeout((t, count) =>
+                       {
+                           Expect(count, EqualTo(maxTryCount));
+                           onTimeoutTriggered = true;
+                       })
+                       .Until(t => t),
+                Throws.TypeOf<TimeoutException>());
+            Expect(onTimeoutTriggered, True);
+        }
     }
 }

@@ -16,6 +16,11 @@ namespace Tests
             get { return _currentTimes; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Generator" /> class.
+        /// </summary>
+        /// <param name="trueAfterTimes">The result will become <c>true</c> after the specified times.</param>
+        /// <param name="throwsException">If set to <c>true</c>, an exception will be thrown for each failure.</param>
         public Generator(int trueAfterTimes, bool throwsException = false)
         {
             _trueAfterTimes = trueAfterTimes;

@@ -149,6 +149,17 @@ namespace Retry
         }
 
         /// <summary>
+        /// Configures the action to take after each time the try action fails and before the next try. 
+        /// The total count of try that has attempted will be passed as parameters.
+        /// </summary>
+        /// <param name="failureAction">The action to take on failure.</param>
+        /// <returns></returns>
+        public RetryTask OnFailure(Action<int> failureAction)
+        {
+            return new RetryTask { Task = Task.OnFailure((result, tryCount) => failureAction(tryCount)) };
+        }
+
+        /// <summary>
         /// Configures the action to take when the try action succeeds.
         /// </summary>
         /// <param name="successAction">The action to take on success.</param>

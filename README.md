@@ -39,6 +39,14 @@ Examples:
         .OnTimeout(lastResult => Trace.TraceError("Did not get result under 0.1 in 20 times."))
         .Until(result => result < 0.1);
 
+    // Also get the tried count.
+    RetryHelper.Instance.Try(() => TryGetSomething())
+        .WithMaxTryCount(20)
+        .OnSuccess((result, triedCount) => Trace.TraceInformation(string.Format("Get expected result {0} after {1} times.", result, triedCount)))
+        .OnFailure((lastResult, triedCount) => Trace.TraceWarning(string.Format("Try failed after {0} times. Got {1}", triedCount, lastResult)))
+        .OnTimeout((lastResult, triedCount) => Trace.TraceError(string.Format("Did not get result under 0.1 in {0} times.", triedCount)))
+        .Until(result => result < 0.1);
+
 - OnSuccess: Executed after the condition is met.
 - OnFailure: Executed after each failed attempt and before the next attempt.
 - OnTimeout: Executed after all allowed attempts are failed.

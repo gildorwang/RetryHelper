@@ -36,13 +36,30 @@ namespace Tests
             var times = 5;
             var generator = new Generator(times);
             var onSuccessTriggered = false;
-            Expect(() => 
+            Expect(() =>
                 _target.Try(() => generator.Next())
                        .WithMaxTryCount(times - 1)
                        .OnSuccess(t => onSuccessTriggered = true)
-                       .Until(t => t), 
+                       .Until(t => t),
                 Throws.TypeOf<TimeoutException>());
             Expect(onSuccessTriggered, False);
+        }
+
+        [Test]
+        [Timeout(1000)]
+        public void TestOnSuccessWithTriedCount()
+        {
+            var times = 5;
+            var generator = new Generator(times);
+            var onSuccessTriggered = false;
+            _target.Try(() => generator.Next())
+                   .OnSuccess((t, count) =>
+                   {
+                       Expect(count, EqualTo(times + 1));
+                       onSuccessTriggered = true;
+                   })
+                   .Until(t => t);
+            Expect(onSuccessTriggered, True);
         }
     }
 }
