@@ -5,7 +5,7 @@ using Retry;
 namespace Tests
 {
     [TestFixture]
-    public class TryUntilExternalConditionTest : AssertionHelper
+    public class TryUntilExternalConditionTest
     {
         private RetryHelper _target;
 
@@ -22,7 +22,7 @@ namespace Tests
         {
             var expectedStopTime = DateTime.Now.AddSeconds(3);
             _target.Try(() => DateTime.Now).Until(() => DateTime.Now >= expectedStopTime);
-            Expect(DateTime.Now, EqualTo(expectedStopTime).Within(TimeSpan.FromMilliseconds(300)));
+            Assert.That(DateTime.Now, Is.EqualTo(expectedStopTime).Within(TimeSpan.FromMilliseconds(300)));
         }
     }
 }

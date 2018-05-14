@@ -6,7 +6,7 @@ using Retry;
 namespace Tests
 {
     [TestFixture]
-    public sealed class RetryHelperTest : AssertionHelper
+    public sealed class RetryHelperTest
     {
         public const int Tolerance = 70;
         public const int Interval = 100;
@@ -22,17 +22,17 @@ namespace Tests
         public void TestConstructor()
         {
             var target = new RetryHelper();
-            Expect(target.DefaultMaxTryCount, EqualTo(RetryHelper.Instance.DefaultMaxTryCount));
-            Expect(target.DefaultMaxTryTime, EqualTo(RetryHelper.Instance.DefaultMaxTryTime));
-            Expect(target.DefaultTryInterval, EqualTo(RetryHelper.Instance.DefaultTryInterval));
+            Assert.That(target.DefaultMaxTryCount, Is.EqualTo(RetryHelper.Instance.DefaultMaxTryCount));
+            Assert.That(target.DefaultMaxTryTime, Is.EqualTo(RetryHelper.Instance.DefaultMaxTryTime));
+            Assert.That(target.DefaultTryInterval, Is.EqualTo(RetryHelper.Instance.DefaultTryInterval));
         }
 
         [Test]
         public void TestDefaultInstance()
         {
-            Expect(RetryHelper.Instance.DefaultMaxTryCount, EqualTo(int.MaxValue));
-            Expect(RetryHelper.Instance.DefaultMaxTryTime, EqualTo(TimeSpan.MaxValue));
-            Expect(RetryHelper.Instance.DefaultTryInterval, EqualTo(TimeSpan.FromMilliseconds(500)));
+            Assert.That(RetryHelper.Instance.DefaultMaxTryCount, Is.EqualTo(int.MaxValue));
+            Assert.That(RetryHelper.Instance.DefaultMaxTryTime, Is.EqualTo(TimeSpan.MaxValue));
+            Assert.That(RetryHelper.Instance.DefaultTryInterval, Is.EqualTo(TimeSpan.FromMilliseconds(500)));
         }
     }
 }

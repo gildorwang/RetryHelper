@@ -6,7 +6,7 @@ using Retry;
 namespace Tests
 {
     [TestFixture]
-    public sealed class OnFailureTest : AssertionHelper
+    public sealed class OnFailureTest
     {
         private RetryHelper _target;
 
@@ -27,11 +27,11 @@ namespace Tests
             _target.Try(() => generator.Next())
                    .OnFailure(t =>
                    {
-                       Expect(t, False);
+                       Assert.That(t, Is.False);
                        onFailureTriggered++;
                    })
                    .Until(t => t);
-            Expect(onFailureTriggered, EqualTo(times));
+            Assert.That(onFailureTriggered, Is.EqualTo(times));
         }
 
         [Test]
@@ -44,7 +44,7 @@ namespace Tests
             _target.Try(() => generator.Next())
                    .OnFailure(t => onFailureTriggered++)
                    .Until(t => t);
-            Expect(onFailureTriggered, EqualTo(0));
+            Assert.That(onFailureTriggered, Is.EqualTo(0));
         }
 
         [Test]
@@ -78,11 +78,11 @@ namespace Tests
             _target.Try(() => generator.Next())
                    .OnFailure((t, count) =>
                    {
-                       Expect(t, False);
-                       Expect(count, EqualTo(++onFailureTriggered));
+                       Assert.That(t, Is.False);
+                       Assert.That(count, Is.EqualTo(++onFailureTriggered));
                    })
                    .Until(t => t);
-            Expect(onFailureTriggered, EqualTo(times));
+            Assert.That(onFailureTriggered, Is.EqualTo(times));
         }
     }
 }
