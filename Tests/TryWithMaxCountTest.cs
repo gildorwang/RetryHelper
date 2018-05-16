@@ -5,7 +5,7 @@ using Retry;
 namespace Tests
 {
     [TestFixture]
-    public class TryWithMaxCountTest : AssertionHelper
+    public class TryWithMaxCountTest
     {
         private RetryHelper _target;
 
@@ -23,10 +23,10 @@ namespace Tests
             var times = 5;
             var generator = new Generator(times);
             bool result = false;
-            Expect(RetryHelperTest.CountTime(() =>
+            Assert.That(RetryHelperTest.CountTime(() =>
                 result = _target.Try(() => generator.Next()).WithMaxTryCount(times + 1).Until(t => t)),
-                EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.Tolerance));
-            Expect(result, True);
+                Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.Tolerance));
+            Assert.That(result, Is.True);
         }
 
         [Test]
@@ -36,12 +36,12 @@ namespace Tests
             var times = 5;
             var generator = new Generator(times);
             bool result = false;
-            Expect(RetryHelperTest.CountTime(() =>
-                Expect(() =>
+            Assert.That(RetryHelperTest.CountTime(() =>
+                Assert.That(() =>
                     result = _target.Try(() => generator.Next()).WithMaxTryCount(times).Until(t => t),
                     Throws.TypeOf<TimeoutException>())),
-                EqualTo(RetryHelperTest.Interval * (times - 1)).Within(RetryHelperTest.Tolerance));
-            Expect(result, False);
+                Is.EqualTo(RetryHelperTest.Interval * (times - 1)).Within(RetryHelperTest.Tolerance));
+            Assert.That(result, Is.False);
         }
     }
 }

@@ -5,7 +5,7 @@ using Retry;
 namespace Tests
 {
     [TestFixture]
-    public class OnTimeoutTest : AssertionHelper
+    public class OnTimeoutTest
     {
         private RetryHelper _target;
 
@@ -26,7 +26,7 @@ namespace Tests
             _target.Try(() => generator.Next())
                    .OnTimeout(t => onTimeoutTriggered = true)
                    .Until(t => t);
-            Expect(onTimeoutTriggered, False);
+            Assert.That(onTimeoutTriggered, Is.False);
         }
 
         [Test]
@@ -36,13 +36,13 @@ namespace Tests
             var times = 5;
             var generator = new Generator(times);
             var onTimeoutTriggered = false;
-            Expect(() =>
+            Assert.That(() =>
                 _target.Try(() => generator.Next())
                        .WithMaxTryCount(times - 1)
                        .OnTimeout(t => onTimeoutTriggered = true)
                        .Until(t => t),
                 Throws.TypeOf<TimeoutException>());
-            Expect(onTimeoutTriggered, True);
+            Assert.That(onTimeoutTriggered, Is.True);
         }
 
         [Test]
@@ -53,17 +53,17 @@ namespace Tests
             var generator = new Generator(times);
             var onTimeoutTriggered = false;
             var maxTryCount = times - 1;
-            Expect(() =>
+            Assert.That(() =>
                 _target.Try(() => generator.Next())
                        .WithMaxTryCount(maxTryCount)
                        .OnTimeout((t, count) =>
                        {
-                           Expect(count, EqualTo(maxTryCount));
+                           Assert.That(count, Is.EqualTo(maxTryCount));
                            onTimeoutTriggered = true;
                        })
                        .Until(t => t),
                 Throws.TypeOf<TimeoutException>());
-            Expect(onTimeoutTriggered, True);
+            Assert.That(onTimeoutTriggered, Is.True);
         }
     }
 }
