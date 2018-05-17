@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Async\TryUntilAsyncConditionTestAsync.cs" />
+    <Compile Include="Async\TryUntilExternalConditionTestAsync.cs" />
     <Compile Include="Async\TryUntilNoExceptionTestAsync.cs" />
     <Compile Include="Async\TryWithIntervalTestAsync.cs" />
     <Compile Include="Async\TryWithMaxCountTestAsync.cs" />

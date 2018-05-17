@@ -63,10 +63,6 @@ namespace Samples
             // Retry on specific exception
             RetryHelper.Instance.Try(() => TryDoSomething()).UntilNoException<ApplicationException>();
 
-            // Lambda can be simplified in this case
-            RetryHelper.Instance.Try(TryDoSomething).UntilNoException();
-
-
             // Change the global default settings
             RetryHelper.Instance.DefaultMaxTryCount = 3;
             RetryHelper.Instance.DefaultMaxTryTime = TimeSpan.FromSeconds(10);

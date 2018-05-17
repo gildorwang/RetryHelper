@@ -33,7 +33,7 @@ namespace Retry
         protected Action<T, int> OnFailureAction = (result, tryCount) => { };
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RetryTask&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="AsyncRetryTask{T}"/> class.
         /// </summary>
         /// <param name="task">The task.</param>
         /// <param name="traceSource">The trace source.</param>
@@ -43,7 +43,7 @@ namespace Retry
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RetryTask&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="AsyncRetryTask{T}"/> class.
         /// </summary>
         /// <param name="task">The task.</param>
         /// <param name="traceSource">The trace source.</param>
