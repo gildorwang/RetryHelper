@@ -6,7 +6,7 @@ using Retry;
 namespace Tests
 {
     [TestFixture]
-    public class TryUntilNoExceptionTestAsync
+    public class TryUntilNoExceptionAsyncTest
     {
         private RetryHelper _target;
 

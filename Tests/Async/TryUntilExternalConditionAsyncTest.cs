@@ -6,7 +6,7 @@ using Retry;
 namespace Tests
 {
     [TestFixture]
-    public class TryUntilExternalConditionTestAsync
+    public class TryUntilExternalConditionAsyncTest
     {
         private RetryHelper _target;
 

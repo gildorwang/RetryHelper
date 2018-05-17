@@ -6,7 +6,7 @@ using Retry;
 namespace Tests
 {
     [TestFixture]
-    public class TryWithIntervalTestAsync
+    public class TryWithIntervalAsyncTest
     {
         private RetryHelper _target;
 
