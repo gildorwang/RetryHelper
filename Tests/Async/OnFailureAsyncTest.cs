@@ -36,6 +36,27 @@ namespace Tests
         }
 
         [Test]
+        [Timeout(2000)]
+        public async Task TestOnFailureAsyncAfterFiveTimesAsync()
+        {
+            var times = 5;
+            var generator = new Generator(times);
+            var onFailureTriggered = 0;
+            await _target.TryAsync(() => generator.Next())
+                .OnFailure(async (t, count) =>
+                {
+                    Assert.That(t, Is.False);
+                    onFailureTriggered++;
+                    // Perform some delay. If the task is not awaited, onFailureTriggered would be
+                    // increased by subsequent tries and the assertion below would fail
+                    await Task.Delay(RetryHelperTest.Interval * 2);
+                    Assert.That(onFailureTriggered, Is.EqualTo(count));
+                })
+                .Until(t => t);
+            Assert.That(onFailureTriggered, Is.EqualTo(times));
+        }
+
+        [Test]
         [Timeout(1000)]
         public async Task TestOnFailureShouldNotFireIfSucceedAtFirstTimeAsync()
         {

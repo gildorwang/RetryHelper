@@ -32,6 +32,23 @@ namespace Tests
 
         [Test]
         [Timeout(1000)]
+        public async Task TestOnSuccessAsyncAfterFiveTimesAsync()
+        {
+            var times = 5;
+            var generator = new Generator(times);
+            var onSuccessTriggered = false;
+            await _target.TryAsync(() => generator.Next())
+                .OnSuccess(async t =>
+                {
+                    await Task.Delay(100);
+                    onSuccessTriggered = true;
+                })
+                .Until(t => t);
+            Assert.That(onSuccessTriggered, Is.True);
+        }
+
+        [Test]
+        [Timeout(1000)]
         public void TestOnSuccessShouldNotFireAsync()
         {
             var times = 5;

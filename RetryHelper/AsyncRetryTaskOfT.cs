@@ -12,6 +12,11 @@ namespace Retry
     /// <typeparam name="T">The type of result returned by the retried delegate.</typeparam>
     public class AsyncRetryTask<T>
     {
+        /// <summary>
+        /// Represents a completed task.
+        /// </summary>
+        protected static readonly Task CompletedTask = Task.FromResult(false);
+
         protected readonly Func<Task<T>> TaskToTry;
         protected Func<T, Task<bool>> EndCondition;
         protected bool RetryOnException;
@@ -28,9 +33,9 @@ namespace Retry
         protected Type ExpectedExceptionType = typeof(Exception);
         protected Exception LastException;
 
-        protected Action<T, int> OnTimeoutAction = (result, tryCount) => { };
-        protected Action<T, int> OnSuccessAction = (result, tryCount) => { };
-        protected Action<T, int> OnFailureAction = (result, tryCount) => { };
+        protected Func<T, int, Task> OnTimeoutAction = (result, tryCount) => CompletedTask;
+        protected Func<T, int, Task> OnSuccessAction = (result, tryCount) => CompletedTask;
+        protected Func<T, int, Task> OnFailureAction = (result, tryCount) => CompletedTask;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AsyncRetryTask{T}"/> class.
@@ -207,7 +212,7 @@ namespace Retry
         public AsyncRetryTask<T> OnTimeout(Action<T> timeoutAction)
         {
             var retryTask = Clone();
-            retryTask.OnTimeoutAction += (result, tryCount) => timeoutAction(result);
+            retryTask.OnTimeoutAction += (result, tryCount) => Task.Run(() => timeoutAction(result));
             return retryTask;
         }
 
@@ -223,6 +228,37 @@ namespace Retry
         public AsyncRetryTask<T> OnTimeout(Action<T, int> timeoutAction)
         {
             var retryTask = Clone();
+            retryTask.OnTimeoutAction += (result, tryCount) => Task.Run(() => timeoutAction(result, tryCount));
+            return retryTask;
+        }
+
+        /// <summary>
+        /// Configures the action to take when the try action timed out before success. 
+        /// The result of the last failed attempt is passed as parameter to the action.
+        /// For <see cref="UntilNoException"/>, the parameter passed to the action 
+        /// is always <c>default(T)</c>
+        /// </summary>
+        /// <param name="timeoutAction">The action to take on timeout.</param>
+        /// <returns></returns>
+        public AsyncRetryTask<T> OnTimeout(Func<T, Task> timeoutAction)
+        {
+            var retryTask = Clone();
+            retryTask.OnTimeoutAction += (result, tryCount) => timeoutAction(result);
+            return retryTask;
+        }
+
+        /// <summary>
+        /// Configures the action to take when the try action timed out before success. 
+        /// The result of the last failed attempt and the total count of attempts 
+        /// are passed as parameters to the action.
+        /// For <see cref="UntilNoException"/>, the parameter passed to the action 
+        /// is always <c>default(T)</c>
+        /// </summary>
+        /// <param name="timeoutAction">The action to take on timeout.</param>
+        /// <returns></returns>
+        public AsyncRetryTask<T> OnTimeout(Func<T, int, Task> timeoutAction)
+        {
+            var retryTask = Clone();
             retryTask.OnTimeoutAction += timeoutAction;
             return retryTask;
         }
@@ -236,7 +272,7 @@ namespace Retry
         public AsyncRetryTask<T> OnFailure(Action<T> failureAction)
         {
             var retryTask = Clone();
-            retryTask.OnFailureAction += (result, tryCount) => failureAction(result);
+            retryTask.OnFailureAction += (result, tryCount) => Task.Run(() => failureAction(result));
             return retryTask;
         }
 
@@ -248,6 +284,34 @@ namespace Retry
         /// <param name="failureAction">The action to take on failure.</param>
         /// <returns></returns>
         public AsyncRetryTask<T> OnFailure(Action<T, int> failureAction)
+        {
+            var retryTask = Clone();
+            retryTask.OnFailureAction += (result, tryCount) => Task.Run(() => failureAction(result, tryCount));
+            return retryTask;
+        }
+
+        /// <summary>
+        /// Configures the action to take after each time the try action fails and before the next try. 
+        /// The result of the failed try action and the total count of attempts that 
+        /// have been performed are passed as parameters to the action.
+        /// </summary>
+        /// <param name="failureAction">The action to take on failure.</param>
+        /// <returns></returns>
+        public AsyncRetryTask<T> OnFailure(Func<T, Task> failureAction)
+        {
+            var retryTask = Clone();
+            retryTask.OnFailureAction += (result, tryCount) => failureAction(result);
+            return retryTask;
+        }
+
+        /// <summary>
+        /// Configures the action to take after each time the try action fails and before the next try. 
+        /// The result of the failed try action and the total count of attempts that 
+        /// have been performed are passed as parameters to the action.
+        /// </summary>
+        /// <param name="failureAction">The action to take on failure.</param>
+        /// <returns></returns>
+        public AsyncRetryTask<T> OnFailure(Func<T, int, Task> failureAction)
         {
             var retryTask = Clone();
             retryTask.OnFailureAction += failureAction;
@@ -263,7 +327,7 @@ namespace Retry
         public AsyncRetryTask<T> OnSuccess(Action<T> successAction)
         {
             var retryTask = Clone();
-            retryTask.OnSuccessAction += (result, tryCount) => successAction(result);
+            retryTask.OnSuccessAction += (result, tryCount) => Task.Run(() => successAction(result));
             return retryTask;
         }
 
@@ -276,6 +340,34 @@ namespace Retry
         /// <param name="successAction">The action to take on success.</param>
         /// <returns></returns>
         public AsyncRetryTask<T> OnSuccess(Action<T, int> successAction)
+        {
+            var retryTask = Clone();
+            retryTask.OnSuccessAction += (result, tryCount) => Task.Run(() => successAction(result, tryCount));
+            return retryTask;
+        }
+
+        /// <summary>
+        /// Configures the action to take when the try action succeeds.
+        /// The result of the successful attempt is passed as parameter to the action.
+        /// </summary>
+        /// <param name="successAction">The action to take on success.</param>
+        /// <returns></returns>
+        public AsyncRetryTask<T> OnSuccess(Func<T, Task> successAction)
+        {
+            var retryTask = Clone();
+            retryTask.OnSuccessAction += (result, tryCount) => successAction(result);
+            return retryTask;
+        }
+
+        /// <summary>
+        /// Configures the action to take when the try action succeeds.
+        /// The result of the successful attempt and the total count of attempts 
+        /// are passed as parameters to the action. This count includes the 
+        /// final successful one.
+        /// </summary>
+        /// <param name="successAction">The action to take on success.</param>
+        /// <returns></returns>
+        public AsyncRetryTask<T> OnSuccess(Func<T, int, Task> successAction)
         {
             var retryTask = Clone();
             retryTask.OnSuccessAction += successAction;
@@ -332,13 +424,13 @@ namespace Retry
                 {
                     TraceSource.TraceVerbose("Trying succeeded after time {0} and total try count {1}.",
                         Stopwatch.Elapsed, TriedCount + 1);
-                    OnSuccessAction(result, TriedCount + 1);
+                    await OnSuccessAction(result, TriedCount + 1);
                     return result;
                 }
-            } while (ShouldContinue(result));
+            } while (await ShouldContinue(result));
 
             // Should not continue. 
-            OnTimeoutAction(result, TriedCount);
+            await OnTimeoutAction(result, TriedCount);
             throw new TimeoutException(TimeoutErrorMsg, LastException);
         }
 
@@ -357,7 +449,7 @@ namespace Retry
             return false;
         }
 
-        private bool ShouldContinue(T result)
+        private async Task<bool> ShouldContinue(T result)
         {
             if (Stopwatch.Elapsed >= MaxTryTime)
             {
@@ -373,7 +465,7 @@ namespace Retry
             }
 
             // If should continue, perform the OnFailure action and wait some time before next try.
-            OnFailureAction(result, TriedCount);
+            await OnFailureAction(result, TriedCount);
             Thread.Sleep(TryInterval);
             return true;
         }
