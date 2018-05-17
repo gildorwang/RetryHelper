@@ -12,8 +12,8 @@ namespace Retry
     /// <typeparam name="T">The type of result returned by the retried delegate.</typeparam>
     public class AsyncRetryTask<T>
     {
-        protected readonly Func<Task<T>> Task;
-        protected Func<T, bool> EndCondition;
+        protected readonly Func<Task<T>> TaskToTry;
+        protected Func<T, Task<bool>> EndCondition;
         protected bool RetryOnException;
 
         protected int MaxTryCount;
@@ -53,7 +53,7 @@ namespace Retry
         public AsyncRetryTask(Func<Task<T>> task, TraceSource traceSource,
             TimeSpan maxTryTime, int maxTryCount, TimeSpan tryInterval)
         {
-            Task = task;
+            TaskToTry = task;
             TraceSource = traceSource;
             MaxTryTime = maxTryTime;
             MaxTryCount = maxTryCount;
@@ -70,7 +70,35 @@ namespace Retry
         [DebuggerNonUserCode]
         public async Task<T> Until(Func<T, bool> endCondition)
         {
+            EndCondition = (t) => Task.FromResult(endCondition(t));
+            return await TryImplAsync();
+        }
+
+        /// <summary>
+        ///   Retries the task until the specified end condition is satisfied, 
+        ///   or the max try time/count is exceeded, or an exception is thrown druing task execution.
+        ///   Then returns the value returned by the task.
+        /// </summary>
+        /// <param name = "endCondition">The end condition.</param>
+        /// <returns></returns>
+        [DebuggerNonUserCode]
+        public async Task<T> Until(Func<T, Task<bool>> endCondition)
+        {
             EndCondition = endCondition;
+            return await TryImplAsync();
+        }
+
+        /// <summary>
+        ///   Retries the task until the specified end condition is satisfied, 
+        ///   or the max try time/count is exceeded, or an exception is thrown druing task execution.
+        ///   Then returns the value returned by the task.
+        /// </summary>
+        /// <param name = "endCondition">The end condition.</param>
+        /// <returns></returns>
+        [DebuggerNonUserCode]
+        public async Task<T> Until(Func<Task<bool>> endCondition)
+        {
+            EndCondition = (t) => endCondition();
             return await TryImplAsync();
         }
 
@@ -84,7 +112,7 @@ namespace Retry
         [DebuggerNonUserCode]
         public async Task<T> Until(Func<bool> endCondition)
         {
-            EndCondition = t => endCondition();
+            EndCondition = (t) => Task.FromResult(endCondition());
             return await TryImplAsync();
         }
 
@@ -96,7 +124,7 @@ namespace Retry
         public async Task<T> UntilNoException()
         {
             RetryOnException = true;
-            EndCondition = t => true;
+            EndCondition = t => Task.FromResult(true);
             return await TryImplAsync();
         }
 
@@ -260,7 +288,7 @@ namespace Retry
         /// <returns></returns>
         protected virtual AsyncRetryTask<T> Clone()
         {
-            return new AsyncRetryTask<T>(Task, TraceSource, MaxTryTime, MaxTryCount, TryInterval)
+            return new AsyncRetryTask<T>(TaskToTry, TraceSource, MaxTryTime, MaxTryCount, TryInterval)
             {
                 OnTimeoutAction = OnTimeoutAction,
                 OnSuccessAction = OnSuccessAction
@@ -286,7 +314,7 @@ namespace Retry
                 try
                 {
                     // Perform the try action.
-                    result = await Task();
+                    result = await TaskToTry();
                 }
                 catch (Exception ex)
                 {
@@ -299,7 +327,7 @@ namespace Retry
                     continue;
                 }
 
-                if (EndCondition(result))
+                if (await EndCondition(result))
                 {
                     TraceSource.TraceVerbose("Trying succeeded after time {0} and total try count {1}.",
                         Stopwatch.Elapsed, TriedCount + 1);

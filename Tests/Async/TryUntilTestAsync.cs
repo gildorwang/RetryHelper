@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using Retry;
-using System.Threading.Tasks;
 
 namespace Tests
 {
@@ -27,7 +27,7 @@ namespace Tests
             Assert.That(
                 await RetryHelperTest.MeasureTime(async () =>
                     result = await _target
-                        .TryAsync(async () => await generator.NextAsync())
+                        .Try(async () => await generator.NextAsync())
                         .Until(t => t)),
                 Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.Tolerance));
             Assert.That(generator.TriedTimes, Is.EqualTo(times + 1));
@@ -44,7 +44,7 @@ namespace Tests
             Assert.That(
                 await RetryHelperTest.MeasureTime(async () =>
                     result = await _target
-                        .TryAsync(async () => await generator.NextAsync())
+                        .Try(async () => await generator.NextAsync())
                         .Until(t => t)),
                 Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.Tolerance));
             Assert.That(generator.TriedTimes, Is.EqualTo(times + 1));

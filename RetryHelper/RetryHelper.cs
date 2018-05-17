@@ -99,9 +99,21 @@ namespace Retry
         /// <typeparam name="T">Type of the return value of the async delegate.</typeparam>
         /// <param name="asyncFunc">The action to try</param>
         /// <returns></returns>
-        public AsyncRetryTask<T> TryAsync<T>(Func<Task<T>> asyncFunc)
+        public AsyncRetryTask<T> Try<T>(Func<Task<T>> asyncFunc)
         {
             return new AsyncRetryTask<T>(asyncFunc, TraceSource, DefaultMaxTryTime, DefaultMaxTryCount, DefaultTryInterval);
+        }
+
+        /// <summary>
+        /// Builds an asynchronous retry task from the specified delegate. This method exists so
+        /// that an <see cref="AsyncRetryTask{T}"/> can be created from a non-async delegate.
+        /// </summary>
+        /// <typeparam name="T">Type of return value of the delegate.</typeparam>
+        /// <param name="func">The delegate to try.</param>
+        /// <returns></returns>
+        public AsyncRetryTask<T> TryAsync<T>(Func<T> func)
+        {
+            return new AsyncRetryTask<T>(() => Task.FromResult(func()), TraceSource, DefaultMaxTryTime, DefaultMaxTryCount, DefaultTryInterval);
         }
     }
 }

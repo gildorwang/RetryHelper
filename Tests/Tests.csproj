@@ -47,6 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Async\TryUntilAsyncConditionTestAsync.cs" />
+    <Compile Include="Async\TryUntilNoExceptionTestAsync.cs" />
+    <Compile Include="Async\TryWithIntervalTestAsync.cs" />
+    <Compile Include="Async\TryWithMaxCountTestAsync.cs" />
+    <Compile Include="Async\TryWithTimeLimitTestAsync.cs" />
     <Compile Include="OnFailureTest.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="OnSuccessTest.cs" />
