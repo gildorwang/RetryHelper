@@ -152,6 +152,38 @@ namespace Retry
         }
 
         /// <summary>
+        /// Configures the action to take when the try action timed out before success.
+        /// The total number of attempts is passed as parameter.
+        /// </summary>
+        /// <param name="timeoutAction">The action to take on timeout.</param>
+        /// <returns></returns>
+        public AsyncRetryTask OnTimeout(Action<int> timeoutAction)
+        {
+            return new AsyncRetryTask { Task = Task.OnTimeout((t, tryCount) => timeoutAction(tryCount)) };
+        }
+
+        /// <summary>
+        /// Configures the asynchronous action to take when the try action timed out before success. 
+        /// </summary>
+        /// <param name="timeoutAction">The action to take on timeout.</param>
+        /// <returns></returns>
+        public AsyncRetryTask OnTimeout(Func<Task> timeoutAction)
+        {
+            return new AsyncRetryTask { Task = Task.OnTimeout(t => timeoutAction()) };
+        }
+
+        /// <summary>
+        /// Configures the asynchronous action to take when the try action timed out before success.
+        /// The total number of attempts is passed as parameter.
+        /// </summary>
+        /// <param name="timeoutAction">The action to take on timeout.</param>
+        /// <returns></returns>
+        public AsyncRetryTask OnTimeout(Func<int, Task> timeoutAction)
+        {
+            return new AsyncRetryTask { Task = Task.OnTimeout((t, tryCount) => timeoutAction(tryCount)) };
+        }
+
+        /// <summary>
         /// Configures the action to take after each time the try action fails and before the next try. 
         /// </summary>
         /// <param name="failureAction">The action to take on failure.</param>
@@ -163,11 +195,32 @@ namespace Retry
 
         /// <summary>
         /// Configures the action to take after each time the try action fails and before the next try. 
-        /// The total count of try that has attempted will be passed as parameters.
+        /// The total number of attempts is passed as parameter.
         /// </summary>
         /// <param name="failureAction">The action to take on failure.</param>
         /// <returns></returns>
         public AsyncRetryTask OnFailure(Action<int> failureAction)
+        {
+            return new AsyncRetryTask { Task = Task.OnFailure((result, tryCount) => failureAction(tryCount)) };
+        }
+
+        /// <summary>
+        /// Configures the asynchronous action to take after each time the try action fails and before the next try. 
+        /// </summary>
+        /// <param name="failureAction">The action to take on failure.</param>
+        /// <returns></returns>
+        public AsyncRetryTask OnFailure(Func<Task> failureAction)
+        {
+            return new AsyncRetryTask { Task = Task.OnFailure(t => failureAction()) };
+        }
+
+        /// <summary>
+        /// Configures the asynchronous action to take after each time the try action fails and before the next try. 
+        /// The total number of attempts is passed as parameter.
+        /// </summary>
+        /// <param name="failureAction">The action to take on failure.</param>
+        /// <returns></returns>
+        public AsyncRetryTask OnFailure(Func<int, Task> failureAction)
         {
             return new AsyncRetryTask { Task = Task.OnFailure((result, tryCount) => failureAction(tryCount)) };
         }
@@ -180,6 +233,38 @@ namespace Retry
         public AsyncRetryTask OnSuccess(Action successAction)
         {
             return new AsyncRetryTask { Task = Task.OnSuccess(t => successAction()) };
+        }
+
+        /// <summary>
+        /// Configures the action to take when the try action succeeds.
+        /// The total number of attempts is passed as parameter.
+        /// </summary>
+        /// <param name="successAction">The action to take on success.</param>
+        /// <returns></returns>
+        public AsyncRetryTask OnSuccess(Action<int> successAction)
+        {
+            return new AsyncRetryTask { Task = Task.OnSuccess((t, tryCount) => successAction(tryCount)) };
+        }
+
+        /// <summary>
+        /// Configures the asynchronous action to take when the try action succeeds.
+        /// </summary>
+        /// <param name="successAction">The action to take on success.</param>
+        /// <returns></returns>
+        public AsyncRetryTask OnSuccess(Func<Task> successAction)
+        {
+            return new AsyncRetryTask { Task = Task.OnSuccess(t => successAction()) };
+        }
+
+        /// <summary>
+        /// Configures the asynchronous action to take when the try action succeeds.
+        /// The total number of attempts is passed as parameter.
+        /// </summary>
+        /// <param name="successAction">The action to take on success.</param>
+        /// <returns></returns>
+        public AsyncRetryTask OnSuccess(Func<int, Task> successAction)
+        {
+            return new AsyncRetryTask { Task = Task.OnSuccess((t, tryCount) => successAction(tryCount)) };
         }
     }
 }
