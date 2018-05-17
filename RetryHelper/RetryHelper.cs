@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Retry
 {
@@ -90,6 +91,17 @@ namespace Retry
         public RetryTask Try(Action action)
         {
             return new RetryTask(action, TraceSource, DefaultMaxTryTime, DefaultMaxTryCount, DefaultTryInterval);
+        }
+
+        /// <summary>
+        /// Builds a async retry task from the specified delegate.
+        /// </summary>
+        /// <typeparam name="T">Type of the return value of the async delegate.</typeparam>
+        /// <param name="asyncFunc">The action to try</param>
+        /// <returns></returns>
+        public AsyncRetryTask<T> TryAsync<T>(Func<Task<T>> asyncFunc)
+        {
+            return new AsyncRetryTask<T>(asyncFunc, TraceSource, DefaultMaxTryTime, DefaultMaxTryCount, DefaultTryInterval);
         }
     }
 }

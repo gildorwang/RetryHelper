@@ -1,11 +1,12 @@
 ﻿using System;
 using NUnit.Framework;
 using Retry;
+using System.Threading.Tasks;
 
 namespace Tests
 {
     [TestFixture]
-    public class TryUntilTest
+    public class TryUntilTestAsync
     {
         private RetryHelper _target;
 
@@ -18,13 +19,16 @@ namespace Tests
 
         [Test]
         [Timeout(1000)]
-        public void TestTryUntilAfterFiveTimes()
+        public async Task TestTryUntilAfterFiveTimesAsync()
         {
             var times = 5;
             var generator = new Generator(times);
             bool result = false;
-            Assert.That(RetryHelperTest.MeasureTime(() =>
-                result = _target.Try(() => generator.Next()).Until(t => t)),
+            Assert.That(
+                await RetryHelperTest.MeasureTime(async () =>
+                    result = await _target
+                        .TryAsync(async () => await generator.NextAsync())
+                        .Until(t => t)),
                 Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.Tolerance));
             Assert.That(generator.TriedTimes, Is.EqualTo(times + 1));
             Assert.That(result, Is.True);
@@ -32,13 +36,16 @@ namespace Tests
 
         [Test]
         [Timeout(100)]
-        public void TestTryUntilSuccessFirstTime()
+        public async Task TestTryUntilSuccessFirstTimeAsync()
         {
             var times = 0;
             var generator = new Generator(times);
             bool result = false;
-            Assert.That(RetryHelperTest.MeasureTime(() =>
-                result = _target.Try(() => generator.Next()).Until(t => t)),
+            Assert.That(
+                await RetryHelperTest.MeasureTime(async () =>
+                    result = await _target
+                        .TryAsync(async () => await generator.NextAsync())
+                        .Until(t => t)),
                 Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.Tolerance));
             Assert.That(generator.TriedTimes, Is.EqualTo(times + 1));
             Assert.That(result, Is.True);

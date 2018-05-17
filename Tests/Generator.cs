@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Tests
 {
@@ -44,6 +45,11 @@ namespace Tests
                 }
             }
             return result;
+        }
+
+        public Task<bool> NextAsync()
+        {
+            return Task.FromResult(Next());
         }
     }
 }

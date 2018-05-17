@@ -24,7 +24,7 @@ namespace Tests
             var generator = new Generator(times, true);
             generator.RandomExceptionType = true;
             bool result = false;
-            Assert.That(RetryHelperTest.CountTime(() =>
+            Assert.That(RetryHelperTest.MeasureTime(() =>
                 result = _target.Try(() => generator.Next()).UntilNoException()),
                 Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.Tolerance));
             Assert.That(generator.TriedTimes, Is.EqualTo(times + 1));
@@ -38,7 +38,7 @@ namespace Tests
             var times = 0;
             var generator = new Generator(times);
             bool result = false;
-            Assert.That(RetryHelperTest.CountTime(() =>
+            Assert.That(RetryHelperTest.MeasureTime(() =>
                 result = _target.Try(() => generator.Next()).Until(t => t)),
                 Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.Tolerance));
             Assert.That(generator.TriedTimes, Is.EqualTo(times + 1));
@@ -52,7 +52,7 @@ namespace Tests
             var times = 10;
             var generator = new Generator(times, true);
             bool result = false;
-            Assert.That(RetryHelperTest.CountTime(() =>
+            Assert.That(RetryHelperTest.MeasureTime(() =>
                 result = _target.Try(() => generator.Next()).UntilNoException<ApplicationException>()),
                 Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.Tolerance));
             Assert.That(generator.TriedTimes, Is.EqualTo(times + 1));
