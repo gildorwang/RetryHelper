@@ -41,7 +41,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RetryHelper.cs" />
-    <Compile Include="AsyncRetryTask.cs" />
+    <Compile Include="AsyncRetryTaskOfT.cs" />
     <Compile Include="RetryTask.cs" />
     <Compile Include="RetryTaskOfT.cs" />
   </ItemGroup>
