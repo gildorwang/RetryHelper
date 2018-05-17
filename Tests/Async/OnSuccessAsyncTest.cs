@@ -61,5 +61,21 @@ namespace Tests
                 .Until(t => t);
             Assert.That(onSuccessTriggered, Is.True);
         }
+
+        [Test]
+        [Timeout(1000)]
+        public async Task TestMultipleOnSuccessAsync()
+        {
+            var times = 5;
+            var generator = new Generator(times);
+            var onSuccessTriggered1 = false;
+            var onSuccessTriggered2 = false;
+            await _target.TryAsync(() => generator.Next())
+                   .OnSuccess(t => onSuccessTriggered1 = true)
+                   .OnSuccess(t => onSuccessTriggered2 = true)
+                   .Until(t => t);
+            Assert.That(onSuccessTriggered1, Is.True);
+            Assert.That(onSuccessTriggered2, Is.True);
+        }
     }
 }

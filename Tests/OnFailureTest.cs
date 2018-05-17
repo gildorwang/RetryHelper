@@ -25,12 +25,12 @@ namespace Tests
             var generator = new Generator(times);
             var onFailureTriggered = 0;
             _target.Try(() => generator.Next())
-                   .OnFailure(t =>
-                   {
-                       Assert.That(t, Is.False);
-                       onFailureTriggered++;
-                   })
-                   .Until(t => t);
+                .OnFailure(t =>
+                {
+                    Assert.That(t, Is.False);
+                    onFailureTriggered++;
+                })
+                .Until(t => t);
             Assert.That(onFailureTriggered, Is.EqualTo(times));
         }
 
@@ -83,6 +83,30 @@ namespace Tests
                    })
                    .Until(t => t);
             Assert.That(onFailureTriggered, Is.EqualTo(times));
+        }
+
+        [Test]
+        [Timeout(1000)]
+        public void TestMultipleOnFailure()
+        {
+            var times = 5;
+            var generator = new Generator(times);
+            var onFailureTriggered1 = 0;
+            var onFailureTriggered2 = 0;
+            _target.Try(() => generator.Next())
+                .OnFailure(t =>
+                {
+                    Assert.That(t, Is.False);
+                    onFailureTriggered1++;
+                })
+                .OnFailure(t =>
+                {
+                    Assert.That(t, Is.False);
+                    onFailureTriggered2++;
+                })
+                .Until(t => t);
+            Assert.That(onFailureTriggered1, Is.EqualTo(times));
+            Assert.That(onFailureTriggered2, Is.EqualTo(times));
         }
     }
 }

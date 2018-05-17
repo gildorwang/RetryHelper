@@ -291,7 +291,8 @@ namespace Retry
             return new AsyncRetryTask<T>(TaskToTry, TraceSource, MaxTryTime, MaxTryCount, TryInterval)
             {
                 OnTimeoutAction = OnTimeoutAction,
-                OnSuccessAction = OnSuccessAction
+                OnSuccessAction = OnSuccessAction,
+                OnFailureAction = OnFailureAction,
             };
         }
 

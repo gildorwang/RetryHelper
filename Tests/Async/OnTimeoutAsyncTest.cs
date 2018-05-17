@@ -64,5 +64,23 @@ namespace Tests
                     .Until(t => t));
             Assert.That(onTimeoutTriggered, Is.True);
         }
+
+        [Test]
+        [Timeout(1000)]
+        public void TestMultipleOnTimeoutAsync()
+        {
+            var times = 5;
+            var generator = new Generator(times);
+            var onTimeoutTriggered1 = false;
+            var onTimeoutTriggered2 = false;
+            Assert.ThrowsAsync<TimeoutException>(() =>
+                _target.TryAsync(() => generator.Next())
+                       .WithMaxTryCount(times - 1)
+                       .OnTimeout(t => onTimeoutTriggered1 = true)
+                       .OnTimeout(t => onTimeoutTriggered2 = true)
+                       .Until(t => t));
+            Assert.That(onTimeoutTriggered1, Is.True);
+            Assert.That(onTimeoutTriggered2, Is.True);
+        }
     }
 }

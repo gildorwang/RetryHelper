@@ -262,7 +262,8 @@ namespace Retry
             return new RetryTask<T>(Task, TraceSource, MaxTryTime, MaxTryCount, TryInterval)
             {
                 OnTimeoutAction = OnTimeoutAction,
-                OnSuccessAction = OnSuccessAction
+                OnSuccessAction = OnSuccessAction,
+                OnFailureAction = OnFailureAction,
             };
         }
 
