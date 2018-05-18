@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using NUnit.Framework;
 using Retry;
+using System.Threading.Tasks;
 
 namespace Tests
 {
@@ -11,10 +12,15 @@ namespace Tests
         public const int Tolerance = 70;
         public const int Interval = 100;
 
-        public static long CountTime(Action action)
+        public static long MeasureTime(Action action)
+        {
+            return MeasureTime(() => Task.Run(action)).Result;
+        }
+
+        public static async Task<long> MeasureTime(Func<Task> asyncAction)
         {
             var stopwatch = Stopwatch.StartNew();
-            action();
+            await asyncAction();
             return stopwatch.ElapsedMilliseconds;
         }
 

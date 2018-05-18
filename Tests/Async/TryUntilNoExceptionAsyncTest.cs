@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using Retry;
 
 namespace Tests
 {
     [TestFixture]
-    public class TryUntilNoExceptionTest
+    public class TryUntilNoExceptionAsyncTest
     {
         private RetryHelper _target;
 
@@ -18,14 +19,14 @@ namespace Tests
 
         [Test]
         [Timeout(2000)]
-        public void TestTryUntilNoExceptionAfterFiveTimes()
+        public async Task TestTryUntilNoExceptionAfterFiveTimesAsync()
         {
             var times = 10;
             var generator = new Generator(times, true);
             generator.RandomExceptionType = true;
             bool result = false;
-            Assert.That(RetryHelperTest.MeasureTime(() =>
-                result = _target.Try(() => generator.Next()).UntilNoException()),
+            Assert.That(await RetryHelperTest.MeasureTime(async () =>
+                result = await _target.Try(async () => await generator.NextAsync()).UntilNoException()),
                 Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.Tolerance));
             Assert.That(generator.TriedTimes, Is.EqualTo(times + 1));
             Assert.That(result, Is.True);
@@ -33,13 +34,13 @@ namespace Tests
 
         [Test]
         [Timeout(100)]
-        public void TestTryUntilNoExceptionSuccessFirstTime()
+        public async Task TestTryUntilNoExceptionSuccessFirstTimeAsync()
         {
             var times = 0;
             var generator = new Generator(times);
             bool result = false;
-            Assert.That(RetryHelperTest.MeasureTime(() =>
-                result = _target.Try(() => generator.Next()).Until(t => t)),
+            Assert.That(await RetryHelperTest.MeasureTime(async () =>
+                result = await _target.Try(async () => await generator.NextAsync()).Until(t => t)),
                 Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.Tolerance));
             Assert.That(generator.TriedTimes, Is.EqualTo(times + 1));
             Assert.That(result, Is.True);
@@ -47,13 +48,13 @@ namespace Tests
 
         [Test]
         [Timeout(2000)]
-        public void TestTryUntilNoExceptionOfTypeAfterFiveTimes()
+        public async Task TestTryUntilNoExceptionOfTypeAfterFiveTimesAsync()
         {
             var times = 10;
             var generator = new Generator(times, true);
             bool result = false;
-            Assert.That(RetryHelperTest.MeasureTime(() =>
-                result = _target.Try(() => generator.Next()).UntilNoException<ApplicationException>()),
+            Assert.That(await RetryHelperTest.MeasureTime(async () =>
+                result = await _target.Try(async () => await generator.NextAsync()).UntilNoException<ApplicationException>()),
                 Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.Tolerance));
             Assert.That(generator.TriedTimes, Is.EqualTo(times + 1));
             Assert.That(result, Is.True);
@@ -61,15 +62,14 @@ namespace Tests
 
         [Test]
         [Timeout(2000)]
-        public void TestTryUntilNoExceptionOfTypeHavingOtherException()
+        public void TestTryUntilNoExceptionOfTypeHavingOtherExceptionAsync()
         {
             var times = 10;
             var generator = new Generator(times, true);
             generator.RandomExceptionType = true;
             bool result = false;
-            Assert.That(() =>
-                result = _target.Try(() => generator.Next()).UntilNoException<ApplicationException>(),
-                Throws.TypeOf<InvalidOperationException>());
+            Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                result = await _target.Try(async () => await generator.NextAsync()).UntilNoException<ApplicationException>());
             Assert.That(result, Is.False);
         }
     }

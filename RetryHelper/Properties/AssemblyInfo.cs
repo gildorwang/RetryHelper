@@ -1,16 +1,15 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("RetryHelper")]
-[assembly: AssemblyDescription("This is a generic helper to help try some action until given condition is met.")]
+[assembly: AssemblyDescription("This is a generic helper to help try some action until the given condition is met. It now works seamlessly with C# async/await keywords for asynchronous operations, which is very common in a scenario that requires retry logic.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Gildor")]
+[assembly: AssemblyCompany("Ken Wang")]
 [assembly: AssemblyProduct("RetryHelper")]
-[assembly: AssemblyCopyright("Copyright ©  2012")]
+[assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +31,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.2.0.0")]
-[assembly: AssemblyVersion("1.2.0.0")]
-[assembly: AssemblyFileVersion("1.2.0.0")]
+[assembly: AssemblyVersion("2.0.0.0")]
+[assembly: AssemblyFileVersion("2.0.0.0")]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Retry
 {
@@ -90,6 +91,50 @@ namespace Retry
         public RetryTask Try(Action action)
         {
             return new RetryTask(action, TraceSource, DefaultMaxTryTime, DefaultMaxTryCount, DefaultTryInterval);
+        }
+
+        /// <summary>
+        /// Builds a async retry task from the specified async delegate.
+        /// </summary>
+        /// <typeparam name="T">Type of the return value of the async delegate.</typeparam>
+        /// <param name="asyncFunc">The action to try</param>
+        /// <returns></returns>
+        public AsyncRetryTask<T> Try<T>(Func<Task<T>> asyncFunc)
+        {
+            return new AsyncRetryTask<T>(asyncFunc, TraceSource, DefaultMaxTryTime, DefaultMaxTryCount, DefaultTryInterval);
+        }
+
+        /// <summary>
+        /// Builds a async retry task from the specified async delegate.
+        /// </summary>
+        /// <param name="asyncFunc">The action to try</param>
+        /// <returns></returns>
+        public AsyncRetryTask Try(Func<Task> asyncFunc)
+        {
+            return new AsyncRetryTask(asyncFunc, TraceSource, DefaultMaxTryTime, DefaultMaxTryCount, DefaultTryInterval);
+        }
+
+        /// <summary>
+        /// Builds an asynchronous retry task from the specified delegate. This method exists so
+        /// that an <see cref="AsyncRetryTask{T}"/> can be created from a non-async delegate.
+        /// </summary>
+        /// <typeparam name="T">Type of return value of the delegate.</typeparam>
+        /// <param name="func">The delegate to try.</param>
+        /// <returns></returns>
+        public AsyncRetryTask<T> TryAsync<T>(Func<T> func)
+        {
+            return new AsyncRetryTask<T>(() => Task.FromResult(func()), TraceSource, DefaultMaxTryTime, DefaultMaxTryCount, DefaultTryInterval);
+        }
+
+        /// <summary>
+        /// Builds an asynchronous retry task from the specified delegate. This method exists so
+        /// that an <see cref="AsyncRetryTask"/> can be created from a non-async delegate.
+        /// </summary>
+        /// <param name="action">The delegate to try.</param>
+        /// <returns></returns>
+        public AsyncRetryTask TryAsync(Action action)
+        {
+            return new AsyncRetryTask(() => Task.Run(action), TraceSource, DefaultMaxTryTime, DefaultMaxTryCount, DefaultTryInterval);
         }
     }
 }

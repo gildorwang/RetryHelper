@@ -6,12 +6,12 @@
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
-    <licenseUrl>https://github.com/gildorwang/RetryHelper/blob/master/LICENSE.md</licenseUrl>
+    <licenseUrl>https://github.com/gildorwang/RetryHelper/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/gildorwang/RetryHelper</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Pass tried count to OnSuccess, OnTimeOut and OnFailure handlers.</releaseNotes>
-    <copyright>Copyright 2012 $author$</copyright>
-    <tags>C# Retry RetryHelper</tags>
+    <releaseNotes>Support async/await.</releaseNotes>
+    <copyright>Copyright 2018 $author$</copyright>
+    <tags>C# Retry RetryHelper RetryEngine RetryLogic Try TryUntil</tags>
   </metadata>
 </package>

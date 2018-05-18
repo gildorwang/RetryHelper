@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Threading.Tasks;
 
 namespace Retry
 {
@@ -60,18 +61,18 @@ namespace Retry
 
         #endregion
 
-       #region Delegates
+        #region Delegates
 
         /// <summary>
         /// Makes an <see cref="Func{TResult}"/> instance from an <see cref="Action"/> instance. 
         /// The <see cref="Func{TResult}"/> instance would execute the <see cref="Action"/> delegate
         /// and return the specified value when being called.
         /// </summary>
-        /// <typeparam name="T">The return type of <see cref="Func{TResult}"/>.</typeparam>
+        /// <typeparam name="TResult">The return type of <see cref="Func{TResult}"/>.</typeparam>
         /// <param name="action">The <see cref="Action"/> instance.</param>
         /// <param name="value">The return value of the <see cref="Func{TResult}"/> instance.</param>
         /// <returns></returns>
-        public static Func<T> MakeFunc<T>(this Action action, T value = default(T))
+        public static Func<TResult> MakeFunc<TResult>(this Action action, TResult value = default(TResult))
         {
             if (action == null)
                 throw new ArgumentNullException("action");
@@ -79,6 +80,31 @@ namespace Retry
             return () =>
             {
                 action();
+                return value;
+            };
+        }
+
+        /// <summary>
+        /// Makes an Func&lt;Task&lt;TResult&gt;&gt; instance from an <see cref="Func{TResult}"/> instance. 
+        /// Executing the returned delegate would execute the <paramref name="action"/> delegate, waiting
+        /// on the task returned by the returned delegate would also wait for the task returned by the
+        /// <paramref name="action"/> delegate. When the returned task is completed, it returns the value 
+        /// specified by <paramref name="value"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The return type of <see cref="Task{TResult}"/>.</typeparam>
+        /// <param name="action">The <see cref="Func{TResult}"/> instance.</param>
+        /// <param name="value">The return value of the <see cref="Task{TResult}"/> instance.</param>
+        /// <returns></returns>
+        internal static Func<Task<TResult>> MakeFunc<TResult>(this Func<Task> action, TResult value = default(TResult))
+        {
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
+            }
+
+            return async () =>
+            {
+                await action();
                 return value;
             };
         }
