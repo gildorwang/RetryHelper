@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("RetryHelper")]
-[assembly: AssemblyDescription("This is a generic helper to help try some action until given condition is met.")]
+[assembly: AssemblyDescription("This is a generic helper to help try some action until the given condition is met. It now works seamlessly with C# async/await keywords for asynchronous operations, which is very common in a scenario that requires retry logic.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Gildor")]
+[assembly: AssemblyCompany("Ken Wang")]
 [assembly: AssemblyProduct("RetryHelper")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]

@@ -1,7 +1,7 @@
 RetryHelper
 =======
 
-This is a generic helper to help try some action until given condition is met. It now works seamlessly with C# `async`/`await` keywords for asynchronous operations, which is very common in a scenario that requires retry logic.
+This is a generic helper to help try some action until the given condition is met. It now works seamlessly with C# `async`/`await` keywords for asynchronous operations, which is very common in a scenario that requires retry logic.
 
 Usage
 ----
