@@ -22,11 +22,25 @@ namespace Tests
         {
             var times = 5;
             var generator = new Generator(times);
-            var onTimeoutTriggered = false;
             _target.Try(() => generator.Next())
-                   .OnTimeout(t => onTimeoutTriggered = true)
+                   .OnTimeout(t => Assert.Fail())
                    .Until(t => t);
-            Assert.That(onTimeoutTriggered, Is.False);
+        }
+
+        [Test]
+        [Timeout(1000)]
+        public void TestOnTimeoutWithNoParameter()
+        {
+            var times = 5;
+            var generator = new Generator(times);
+            var onTimeoutTriggered = false;
+            Assert.That(() =>
+                _target.Try(() => generator.Next())
+                       .WithMaxTryCount(times - 1)
+                       .OnTimeout(() => onTimeoutTriggered = true)
+                       .Until(t => t),
+                Throws.TypeOf<TimeoutException>());
+            Assert.That(onTimeoutTriggered, Is.True);
         }
 
         [Test]
@@ -39,7 +53,11 @@ namespace Tests
             Assert.That(() =>
                 _target.Try(() => generator.Next())
                        .WithMaxTryCount(times - 1)
-                       .OnTimeout(t => onTimeoutTriggered = true)
+                       .OnTimeout(t =>
+                       {
+                           Assert.IsFalse(t);
+                           onTimeoutTriggered = true;
+                       })
                        .Until(t => t),
                 Throws.TypeOf<TimeoutException>());
             Assert.That(onTimeoutTriggered, Is.True);

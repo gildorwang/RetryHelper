@@ -149,7 +149,18 @@ namespace Retry
         /// <returns></returns>
         public RetryTask OnTimeout(Action timeoutAction)
         {
-            return new RetryTask { Task = Task.OnTimeout(t => timeoutAction()) };
+            return new RetryTask { Task = Task.OnTimeout(timeoutAction) };
+        }
+
+        /// <summary>
+        /// Configures the action to take when the try action timed out before success. 
+        /// The total count of attempts is passed as parameter to the <paramref name="timeoutAction"/>.
+        /// </summary>
+        /// <param name="timeoutAction">The action to take on timeout.</param>
+        /// <returns></returns>
+        public RetryTask OnTimeout(Action<int> timeoutAction)
+        {
+            return new RetryTask { Task = Task.OnTimeout(timeoutAction) };
         }
 
         /// <summary>
@@ -159,18 +170,18 @@ namespace Retry
         /// <returns></returns>
         public RetryTask OnFailure(Action failureAction)
         {
-            return new RetryTask { Task = Task.OnFailure(t => failureAction()) };
+            return new RetryTask { Task = Task.OnFailure(failureAction) };
         }
 
         /// <summary>
         /// Configures the action to take after each time the try action fails and before the next try. 
-        /// The total count of try that has attempted will be passed as parameters.
+        /// The total count of attempts so far is passed as parameter to the <paramref name="failureAction"/>.
         /// </summary>
         /// <param name="failureAction">The action to take on failure.</param>
         /// <returns></returns>
         public RetryTask OnFailure(Action<int> failureAction)
         {
-            return new RetryTask { Task = Task.OnFailure((result, tryCount) => failureAction(tryCount)) };
+            return new RetryTask { Task = Task.OnFailure(failureAction) };
         }
 
         /// <summary>
@@ -180,7 +191,19 @@ namespace Retry
         /// <returns></returns>
         public RetryTask OnSuccess(Action successAction)
         {
-            return new RetryTask { Task = Task.OnSuccess(t => successAction()) };
+            return new RetryTask { Task = Task.OnSuccess(successAction) };
+        }
+
+        /// <summary>
+        /// Configures the action to take when the try action succeeds.
+        /// The total count of attempts is passed as parameter to the <paramref name="successAction"/>.
+        /// This count includes the final successful one.
+        /// </summary>
+        /// <param name="successAction">The action to take on success.</param>
+        /// <returns></returns>
+        public RetryTask OnSuccess(Action<int> successAction)
+        {
+            return new RetryTask { Task = Task.OnSuccess(successAction) };
         }
     }
 }

@@ -19,6 +19,22 @@ namespace Tests
 
         [Test]
         [Timeout(1000)]
+        public void TestOnFailureWithNoParameter()
+        {
+            var times = 5;
+            var generator = new Generator(times);
+            var onFailureTriggered = 0;
+            _target.Try(() => generator.Next())
+                .OnFailure(() =>
+                {
+                    onFailureTriggered++;
+                })
+                .Until(t => t);
+            Assert.That(onFailureTriggered, Is.EqualTo(times));
+        }
+
+        [Test]
+        [Timeout(1000)]
         public void TestOnFailureAfterFiveTimes()
         {
             var times = 5;

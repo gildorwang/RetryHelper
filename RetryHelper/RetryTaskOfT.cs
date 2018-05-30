@@ -183,6 +183,16 @@ namespace Retry
         }
 
         /// <summary>
+        /// Configures the action to take when the try action timed out before success.
+        /// </summary>
+        /// <param name="timeoutAction">The action to take on timeout.</param>
+        /// <returns></returns>
+        public RetryTask<T> OnTimeout(Action timeoutAction)
+        {
+            return OnTimeout((result, tryCount) => timeoutAction());
+        }
+
+        /// <summary>
         /// Configures the action to take when the try action timed out before success. 
         /// The result of the last failed attempt is passed as parameter to the action.
         /// For <see cref="UntilNoException"/>, the parameter passed to the action 
@@ -192,16 +202,14 @@ namespace Retry
         /// <returns></returns>
         public RetryTask<T> OnTimeout(Action<T> timeoutAction)
         {
-            var retryTask = Clone();
-            retryTask.OnTimeoutAction += (result, tryCount) => timeoutAction(result);
-            return retryTask;
+            return OnTimeout((result, tryCount) => timeoutAction(result));
         }
 
         /// <summary>
         /// Configures the action to take when the try action timed out before success. 
         /// The result of the last failed attempt and the total count of attempts 
         /// are passed as parameters to the action.
-        /// For <see cref="UntilNoException"/>, the parameter passed to the action 
+        /// For <see cref="UntilNoException"/>, the first parameter passed to the action 
         /// is always <c>default(T)</c>
         /// </summary>
         /// <param name="timeoutAction">The action to take on timeout.</param>
@@ -215,15 +223,23 @@ namespace Retry
 
         /// <summary>
         /// Configures the action to take after each time the try action fails and before the next try. 
+        /// </summary>
+        /// <param name="failureAction">The action to take on failure.</param>
+        /// <returns></returns>
+        public RetryTask<T> OnFailure(Action failureAction)
+        {
+            return OnFailure((result, tryCount) => failureAction());
+        }
+
+        /// <summary>
+        /// Configures the action to take after each time the try action fails and before the next try. 
         /// The result of the failed try action will be passed as parameter to the action.
         /// </summary>
         /// <param name="failureAction">The action to take on failure.</param>
         /// <returns></returns>
         public RetryTask<T> OnFailure(Action<T> failureAction)
         {
-            var retryTask = Clone();
-            retryTask.OnFailureAction += (result, tryCount) => failureAction(result);
-            return retryTask;
+            return OnFailure((result, tryCount) => failureAction(result));
         }
 
         /// <summary>
@@ -242,15 +258,23 @@ namespace Retry
 
         /// <summary>
         /// Configures the action to take when the try action succeeds.
+        /// </summary>
+        /// <param name="successAction">The action to take on success.</param>
+        /// <returns></returns>
+        public RetryTask<T> OnSuccess(Action successAction)
+        {
+            return OnSuccess((result, tryCount) => successAction());
+        }
+
+        /// <summary>
+        /// Configures the action to take when the try action succeeds.
         /// The result of the successful attempt is passed as parameter to the action.
         /// </summary>
         /// <param name="successAction">The action to take on success.</param>
         /// <returns></returns>
         public RetryTask<T> OnSuccess(Action<T> successAction)
         {
-            var retryTask = Clone();
-            retryTask.OnSuccessAction += (result, tryCount) => successAction(result);
-            return retryTask;
+            return OnSuccess((result, tryCount) => successAction(result));
         }
 
         /// <summary>
