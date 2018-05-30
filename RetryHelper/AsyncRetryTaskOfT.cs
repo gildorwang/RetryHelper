@@ -134,14 +134,29 @@ namespace Retry
         }
 
         /// <summary>
-        ///   Retries the task until the specified exception is not thrown during the task execution.
+        ///   Retries the task until the specified exception or any derived exception is not thrown during the task execution.
         ///   Any other exception thrown is re-thrown.
         /// </summary>
         /// <returns></returns>
         [DebuggerNonUserCode]
         public async Task<T> UntilNoException<TException>()
         {
-            ExpectedExceptionType = typeof(TException);
+            return await UntilNoException(typeof(TException));
+        }
+
+        /// <summary>
+        ///   Retries the task until the specified exception or any derived exception is not thrown during the task execution.
+        ///   Any other exception thrown is re-thrown.
+        /// </summary>
+        /// <returns></returns>
+        [DebuggerNonUserCode]
+        public async Task<T> UntilNoException(Type exceptionType)
+        {
+            if (!typeof(Exception).IsAssignableFrom(exceptionType))
+            {
+                throw new ArgumentException($"Parameter {nameof(exceptionType)} must be a type that is assignable to type System.Exception.", nameof(exceptionType));
+            }
+            ExpectedExceptionType = exceptionType;
             return await UntilNoException();
         }
 

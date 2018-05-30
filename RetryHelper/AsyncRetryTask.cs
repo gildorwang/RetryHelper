@@ -42,6 +42,9 @@ namespace Retry
                 maxTryTime, maxTryCount, tryInterval);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AsyncRetryTask"/> class.
+        /// </summary>
         protected AsyncRetryTask()
         {
         }
@@ -81,7 +84,7 @@ namespace Retry
         }
 
         /// <summary>
-        ///   Retries the task until the specified exception is not thrown during the task execution.
+        ///   Retries the task until the specified exception or any derived exception is not thrown during the task execution.
         ///   Any other exception thrown is re-thrown.
         /// </summary>
         /// <returns></returns>
@@ -89,6 +92,17 @@ namespace Retry
         public async Task UntilNoException<TException>()
         {
             await Task.UntilNoException<TException>();
+        }
+
+        /// <summary>
+        ///   Retries the task until the specified exception or any derived exception is not thrown during the task execution.
+        ///   Any other exception thrown is re-thrown.
+        /// </summary>
+        /// <returns></returns>
+        [DebuggerNonUserCode]
+        public async Task UntilNoException(Type exceptionType)
+        {
+            await Task.UntilNoException(exceptionType);
         }
 
         /// <summary>
