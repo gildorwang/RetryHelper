@@ -21,8 +21,7 @@ namespace Retry
 
         #region Singleton
 
-        private static readonly Lazy<RetryHelper> _instance =
-            new Lazy<RetryHelper>(() => new RetryHelper());
+        private static readonly Lazy<RetryHelper> _instance = new Lazy<RetryHelper>(() => new RetryHelper());
 
         /// <summary>
         /// Get the default <see cref="RetryHelper"/> instance which uses the default trace source name.
@@ -55,7 +54,7 @@ namespace Retry
         }
 
         /// <summary>
-        /// Gets or sets the default max try time.
+        /// Gets or sets the default max try time. Defaults to unlimited (<c>TimeSpan.MaxValue</c>).
         /// </summary>
         /// <value>
         /// The default max try time.
@@ -63,7 +62,7 @@ namespace Retry
         public TimeSpan DefaultMaxTryTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the default try interval.
+        /// Gets or sets the default try interval. Defaults to 500 ms.
         /// </summary>
         /// <value>
         /// The default try interval.
@@ -71,7 +70,7 @@ namespace Retry
         public TimeSpan DefaultTryInterval { get; set; }
 
         /// <summary>
-        /// Gets or sets the default max try count.
+        /// Gets or sets the default max try count. Defaults to unlimited (<c>Int32.MaxValue</c>).
         /// </summary>
         /// <value>
         /// The default max try count.

@@ -22,19 +22,19 @@ await RetryHelper.Instance.Try(async () => await TryGetValueAsync()).Until(async
 
 ### Example 1: Retry until I get a return value < 0.1 from the method *TryGetValue*.
 ````csharp
-// Basic usage
+// Basic usage - keep trying every 500ms forever
 RetryHelper.Instance.Try(() => TryGetValue()).Until(result => result < 0.1);
 
 // Get the result from the retried method
 var resultSmallEnough = RetryHelper.Instance.Try(() => TryGetValue()).Until(result => result < 0.1);
 
-// Specify interval
+// Specify interval as 100 ms
 RetryHelper.Instance.Try(() => TryGetValue()).WithTryInterval(100).Until(result => result < 0.1);
 
-// Specify max try count, will throw TimeoutException if exceeded
+// Try 20 times maximum and throw TimeoutException if exceeded
 RetryHelper.Instance.Try(() => TryGetValue()).WithMaxTryCount(20).Until(result => result < 0.1);
 
-// Can also constrain the total try time
+// Can also limit the total try time duration
 RetryHelper.Instance.Try(() => TryGetValue()).WithTimeLimit(TimeSpan.FromSeconds(10)).Until(result => result < 0.1);
 
 // Specify the extra success/fail/timeout action
@@ -45,10 +45,18 @@ RetryHelper.Instance.Try(() => TryGetValue())
     .OnTimeout(lastResult => Trace.TraceError("Did not get result under 0.1 in 20 times."))
     .Until(result => result < 0.1);
 ````
-
+#### Callbacks explained
 - `OnSuccess`: Executed after the condition is met.
 - `OnFailure`: Executed after each failed attempt and before the next attempt.
 - `OnTimeout`: Executed after all allowed attempts have failed.
+
+Multiple callbacks of the same type can be registered. In this case, the order of invocation is not guaranteed.
+````csharp
+RetryHelper.Instance.Try(() => TryGetValue())
+    .OnFailure(result => Trace.TraceWarning($"Try failed. Got {result}."))
+    .OnFailure(() => Trace.TraceWarning($"As I said or will say, it failed."))
+    .Until(result => result < 0.1);
+````
 
 
 ### Example 2: Retry method *TryDoSomething* until there's no exception thrown.
@@ -59,6 +67,9 @@ RetryHelper.Instance.Try(() => TryDoSomething()).UntilNoException();
 
 // Retry on specific exception
 RetryHelper.Instance.Try(() => TryDoSomething()).UntilNoException<ApplicationException>();
+
+// Or pass the Type object as parameter
+RetryHelper.Instance.Try(() => TryDoSomething()).UntilNoException(typeof(ApplicationException));
 ````
 
 
@@ -78,7 +89,7 @@ await RetryHelper.Instance.Try(async () => await TryGetValueAsync()).Until(async
 await RetryHelper.Instance.TryAsync(() => TryGetValue()).Until(async result => result + await TryGetValueAsync() < 0.2);
 
 // Asynchronous OnSuccess/OnFailure/OnTimeout
-// Note that asyhronous operation taken in OnFailure counts against TimeLimit,
+// Note that asynchronous operation taken in OnFailure counts against TimeLimit,
 // i.e. when retrying with time limit, the more time taken in OnFailure, the less
 // retries can be performed.
 await RetryHelper.Instance.Try(async () => await TryGetValueAsync())
@@ -90,6 +101,8 @@ await RetryHelper.Instance.Try(async () => await TryGetValueAsync())
     .Until(result => result < 0.1);
 ````
 
+*Just like the synchronous version above, multiple asynchronous callbacks of the same type can be registered. In this case, callbacks will be invoked and awaited one by one, although the order of invocation is not guaranteed. Asynchronous callbacks will not be invoked concurrently.*
+
 
 ### Change the global default settings
 
@@ -100,7 +113,7 @@ RetryHelper.Instance.DefaultTryInterval = TimeSpan.FromMilliseconds(100);
 ````
 
 
-### Get another RetryHelper instance with custom TraceSource and unique configration
+### Get another RetryHelper instance with custom TraceSource and unique configuration
 
 ````csharp
 var retryHelper = new RetryHelper(new TraceSource("MyTraceSource"))
@@ -114,10 +127,17 @@ var retryHelper = new RetryHelper(new TraceSource("MyTraceSource"))
 
 Change Log
 ==========
+### v2.1.0 (2018/5/30)
+* Support passing exception type to `UntilNoException`
+* Allow `OnFailure`, `OnSuccess` and `OnTimeout` callbacks to take no parameter
+* Fixed a bug that if multiple callbacks of the same type are registered with async retry tasks, only the last one is awaited
+* Replaced `Thread.Sleep` with `Task.Delay` for `AsyncRetryTask`
+* Made `Extensions.MakeFunc` obsolete which should not have been public
+
 ### v2.0.0 (2018/5/17)
 * Support asynchronous operations, conditions and callbacks (`async`/`await` keywords)
 * Updated target framework to .NET 4.5
-* Fixed a bug that `OnFailure` is not respected if not registed last
+* Fixed a bug that `OnFailure` is not respected if not registered last
 
 
 LICENSE
