@@ -9,12 +9,9 @@ namespace Retry
     /// </summary>
     public class AsyncRetryTask
     {
-        public static readonly TimeSpan DefaultTryInterval = TimeSpan.FromMilliseconds(500);
-
-        public static readonly TimeSpan DefaultMaxTryTime = TimeSpan.MaxValue;
-
-        public static readonly int DefaultMaxTryCount = int.MaxValue;
-
+        /// <summary>
+        /// The underlying parameterized <see cref="AsyncRetryTask{T}"/> instance.
+        /// </summary>
         protected AsyncRetryTask<int> Task;
 
         /// <summary>

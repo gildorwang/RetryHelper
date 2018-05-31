@@ -327,9 +327,9 @@ namespace Retry
                     // Perform the try action.
                     result = Task();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    if(ShouldThrow(ex))
+                    if (ShouldThrow(ex))
                     {
                         throw;
                     }
@@ -338,14 +338,14 @@ namespace Retry
                     continue;
                 }
 
-                if(EndCondition(result))
+                if (EndCondition(result))
                 {
                     TraceSource.TraceVerbose("Trying succeeded after time {0} and total try count {1}.",
                         Stopwatch.Elapsed, TriedCount + 1);
                     OnSuccessAction(result, TriedCount + 1);
                     return result;
                 }
-            } while(ShouldContinue(result));
+            } while (ShouldContinue(result));
 
             // Should not continue. 
             OnTimeoutAction(result, TriedCount);
@@ -355,7 +355,7 @@ namespace Retry
         private bool ShouldThrow(Exception exception)
         {
             // If exception is not recoverable,
-            if(exception is OutOfMemoryException || exception is AccessViolationException ||
+            if (exception is OutOfMemoryException || exception is AccessViolationException ||
                 // or exception is not expected or not of expected type.
                 !RetryOnException || !ExpectedExceptionType.IsInstanceOfType(exception))
             {
@@ -369,13 +369,13 @@ namespace Retry
 
         private bool ShouldContinue(T result)
         {
-            if(Stopwatch.Elapsed >= MaxTryTime)
+            if (Stopwatch.Elapsed >= MaxTryTime)
             {
                 TimeoutErrorMsg = string.Format(CultureInfo.InvariantCulture,
                     "The maximum try time {0} for the operation has been exceeded.", MaxTryTime);
                 return false;
             }
-            if(++TriedCount >= MaxTryCount)
+            if (++TriedCount >= MaxTryCount)
             {
                 TimeoutErrorMsg = string.Format(CultureInfo.InvariantCulture,
                     "The maximum try count {0} for the operation has been exceeded.", MaxTryCount);

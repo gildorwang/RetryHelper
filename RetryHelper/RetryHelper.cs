@@ -9,8 +9,14 @@ namespace Retry
     /// </summary>
     public class RetryHelper
     {
+        /// <summary>
+        /// The default name of the <see cref="System.Diagnostics.TraceSource"/> instance used.
+        /// </summary>
         public static readonly string DefaultTraceSourceName = "retryHelperTrace";
-        
+
+        /// <summary>
+        /// The <see cref="System.Diagnostics.TraceSource"/> instance used by this <see cref="RetryHelper"/> instance.
+        /// </summary>
         protected readonly TraceSource TraceSource;
 
         #region Singleton

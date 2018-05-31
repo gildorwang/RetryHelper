@@ -8,12 +8,24 @@ namespace Retry
     /// </summary>
     public class RetryTask
     {
+        /// <summary>
+        /// The default time interval to wait between each retry attempt. Defaults to 500 ms.
+        /// </summary>
         public static readonly TimeSpan DefaultTryInterval = TimeSpan.FromMilliseconds(500);
 
+        /// <summary>
+        /// The default max try time limit. Defaults to unlimited (<c>TimeSpan.MaxValue</c>).
+        /// </summary>
         public static readonly TimeSpan DefaultMaxTryTime = TimeSpan.MaxValue;
 
+        /// <summary>
+        /// The default max try count limit. Defaults to unlimited (<c>Int32.MaxValue</c>).
+        /// </summary>
         public static readonly int DefaultMaxTryCount = int.MaxValue;
 
+        /// <summary>
+        /// The underlying parameterized <see cref="RetryTask{T}"/> instance.
+        /// </summary>
         protected RetryTask<int> Task;
 
         /// <summary>
