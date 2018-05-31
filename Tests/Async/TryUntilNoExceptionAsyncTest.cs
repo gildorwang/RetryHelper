@@ -27,7 +27,7 @@ namespace Tests
             bool result = false;
             Assert.That(await RetryHelperTest.MeasureTime(async () =>
                 result = await _target.Try(async () => await generator.NextAsync()).UntilNoException()),
-                Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.Tolerance));
+                Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.AsyncTolerance));
             Assert.That(generator.TriedTimes, Is.EqualTo(times + 1));
             Assert.That(result, Is.True);
         }
@@ -41,7 +41,7 @@ namespace Tests
             bool result = false;
             Assert.That(await RetryHelperTest.MeasureTime(async () =>
                 result = await _target.Try(async () => await generator.NextAsync()).Until(t => t)),
-                Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.Tolerance));
+                Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.AsyncTolerance));
             Assert.That(generator.TriedTimes, Is.EqualTo(times + 1));
             Assert.That(result, Is.True);
         }
@@ -55,7 +55,7 @@ namespace Tests
             bool result = false;
             Assert.That(await RetryHelperTest.MeasureTime(async () =>
                 result = await _target.Try(async () => await generator.NextAsync()).UntilNoException<ApplicationException>()),
-                Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.Tolerance));
+                Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.AsyncTolerance));
             Assert.That(generator.TriedTimes, Is.EqualTo(times + 1));
             Assert.That(result, Is.True);
         }
@@ -69,7 +69,7 @@ namespace Tests
             bool result = false;
             Assert.That(await RetryHelperTest.MeasureTime(async () =>
                 result = await _target.Try(() => generator.NextAsync()).UntilNoException(typeof(ApplicationException))),
-                Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.Tolerance));
+                Is.EqualTo(RetryHelperTest.Interval * times).Within(RetryHelperTest.AsyncTolerance));
             Assert.That(generator.TriedTimes, Is.EqualTo(times + 1));
             Assert.That(result, Is.True);
         }

@@ -536,7 +536,10 @@ namespace Retry
 
             // If should continue, perform the OnFailure action and wait some time before next try.
             await InvokeCallback(OnFailureAction, result, TriedCount);
-            Thread.Sleep(TryInterval);
+            // Using Task.Delay instead of Thread.Sleep actually makes the interval less precise
+            // with ~15ms off. It could be ok for most retry scenarios where a lot of I/O operations
+            // take place, but further investigation might be needed.
+            await Task.Delay(TryInterval);
             return true;
         }
 
