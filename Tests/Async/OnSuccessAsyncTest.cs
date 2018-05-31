@@ -114,7 +114,7 @@ namespace Tests
         }
 
         [Test]
-        [Timeout(1000)]
+        [Timeout(4000)]
         public async Task TestMultipleOnSuccessAsync()
         {
             var times = 5;
@@ -122,10 +122,19 @@ namespace Tests
             var onSuccessTriggered1 = false;
             var onSuccessTriggered2 = false;
             await _target.TryAsync(() => generator.Next())
-                   .OnSuccess(t => onSuccessTriggered1 = true)
-                   .OnSuccess(t => onSuccessTriggered2 = true)
+                   .OnSuccess(async t =>
+                   {
+                       await Task.Delay(400);
+                       onSuccessTriggered1 = true;
+                   })
+                   .OnSuccess(async t =>
+                   {
+                       await Task.Delay(50);
+                       onSuccessTriggered2 = true;
+                   })
                    .Until(t => t);
             Assert.That(onSuccessTriggered1, Is.True);
+            Console.WriteLine("AA");
             Assert.That(onSuccessTriggered2, Is.True);
         }
     }

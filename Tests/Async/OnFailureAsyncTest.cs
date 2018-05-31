@@ -134,7 +134,7 @@ namespace Tests
         }
 
         [Test]
-        [Timeout(1000)]
+        [Timeout(4000)]
         public async Task TestMultipleOnFailureAsync()
         {
             var times = 5;
@@ -142,13 +142,15 @@ namespace Tests
             var onFailureTriggered1 = 0;
             var onFailureTriggered2 = 0;
             await _target.TryAsync(() => generator.Next())
-                .OnFailure(t =>
+                .OnFailure(async t =>
                 {
+                    await Task.Delay(500);
                     Assert.That(t, Is.False);
                     onFailureTriggered1++;
                 })
-                .OnFailure(t =>
+                .OnFailure(async t =>
                 {
+                    await Task.Delay(50);
                     Assert.That(t, Is.False);
                     onFailureTriggered2++;
                 })

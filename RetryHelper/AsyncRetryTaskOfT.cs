@@ -482,14 +482,26 @@ namespace Retry
                 {
                     TraceSource.TraceVerbose("Trying succeeded after time {0} and total try count {1}.",
                         Stopwatch.Elapsed, TriedCount + 1);
-                    await OnSuccessAction(result, TriedCount + 1);
+                    await InvokeCallback(OnSuccessAction, result, TriedCount + 1);
                     return result;
                 }
             } while (await ShouldContinue(result));
 
             // Should not continue. 
-            await OnTimeoutAction(result, TriedCount);
+            await InvokeCallback(OnTimeoutAction, result, TriedCount);
             throw new TimeoutException(TimeoutErrorMsg, LastException);
+        }
+
+        /// <summary>
+        /// Multicast delegate needs to be called and awaited one by one. Otherwise only the task
+        /// from the last delegate is returned and awaited.
+        /// </summary>
+        private async Task InvokeCallback(Delegate callback, T result, int triedCount)
+        {
+            foreach (Func<T, int, Task> singleCallback in callback.GetInvocationList())
+            {
+                await singleCallback(result, triedCount);
+            }
         }
 
         private bool ShouldThrow(Exception exception)
@@ -523,7 +535,7 @@ namespace Retry
             }
 
             // If should continue, perform the OnFailure action and wait some time before next try.
-            await OnFailureAction(result, TriedCount);
+            await InvokeCallback(OnFailureAction, result, TriedCount);
             Thread.Sleep(TryInterval);
             return true;
         }
