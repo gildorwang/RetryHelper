@@ -10,6 +10,10 @@ Write retry logic for operations like web request or file operation in a more re
 Examples:
 -------
 
+````csharp
+using Retry;
+````
+
 ### One-line example
 ````csharp
 RetryHelper.Instance.Try(() => TryDoSomething()).UntilNoException();
