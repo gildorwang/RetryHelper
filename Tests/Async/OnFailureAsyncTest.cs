@@ -20,6 +20,19 @@ namespace Tests
 
         [Test]
         [Timeout(1000)]
+        public async Task TestOnFailureWithNoParameter()
+        {
+            var times = 5;
+            var generator = new Generator(times);
+            var onFailureTriggered = 0;
+            await _target.TryAsync(() => generator.Next())
+                .OnFailure(() => onFailureTriggered++)
+                .Until(t => t);
+            Assert.That(onFailureTriggered, Is.EqualTo(times));
+        }
+
+        [Test]
+        [Timeout(1000)]
         public async Task TestOnFailureAfterFiveTimesAsync()
         {
             var times = 5;
@@ -58,13 +71,26 @@ namespace Tests
 
         [Test]
         [Timeout(1000)]
+        public async Task TestOnFailureAsyncWithNoParameterAsync()
+        {
+            var times = 5;
+            var generator = new Generator(times);
+            var onFailureTriggered = 0;
+            await _target.TryAsync(() => generator.Next())
+                .OnFailure(async () => await Task.Run(() => onFailureTriggered++))
+                .Until(t => t);
+            Assert.That(onFailureTriggered, Is.EqualTo(times));
+        }
+
+        [Test]
+        [Timeout(1000)]
         public async Task TestOnFailureShouldNotFireIfSucceedAtFirstTimeAsync()
         {
             var times = 0;
             var generator = new Generator(times);
             var onFailureTriggered = 0;
             await _target.TryAsync(() => generator.Next())
-                .OnFailure(t => onFailureTriggered++)
+                .OnFailure(() => onFailureTriggered++)
                 .Until(t => t);
             Assert.That(onFailureTriggered, Is.EqualTo(0));
         }

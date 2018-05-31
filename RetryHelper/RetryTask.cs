@@ -160,7 +160,7 @@ namespace Retry
         /// <returns></returns>
         public RetryTask OnTimeout(Action<int> timeoutAction)
         {
-            return new RetryTask { Task = Task.OnTimeout(timeoutAction) };
+            return new RetryTask { Task = Task.OnTimeout((result, tryCount) => timeoutAction(tryCount)) };
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace Retry
         /// <returns></returns>
         public RetryTask OnFailure(Action<int> failureAction)
         {
-            return new RetryTask { Task = Task.OnFailure(failureAction) };
+            return new RetryTask { Task = Task.OnFailure((result, tryCount) => failureAction(tryCount)) };
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace Retry
         /// <returns></returns>
         public RetryTask OnSuccess(Action<int> successAction)
         {
-            return new RetryTask { Task = Task.OnSuccess(successAction) };
+            return new RetryTask { Task = Task.OnSuccess((result, tryCount) => successAction(tryCount)) };
         }
     }
 }

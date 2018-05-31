@@ -23,11 +23,24 @@ namespace Tests
         {
             var times = 5;
             var generator = new Generator(times);
-            var onTimeoutTriggered = false;
             await _target.TryAsync(() => generator.Next())
-                   .OnTimeout(t => onTimeoutTriggered = true)
+                   .OnTimeout(() => Assert.Fail())
                    .Until(t => t);
-            Assert.That(onTimeoutTriggered, Is.False);
+        }
+
+        [Test]
+        [Timeout(1000)]
+        public void TestOnTimeoutWithNoParameterAsync()
+        {
+            var times = 5;
+            var generator = new Generator(times);
+            var onTimeoutTriggered = false;
+            Assert.ThrowsAsync<TimeoutException>(() =>
+                _target.TryAsync(() => generator.Next())
+                    .WithMaxTryCount(times - 1)
+                    .OnTimeout(() => onTimeoutTriggered = true)
+                    .Until(t => t));
+            Assert.That(onTimeoutTriggered, Is.True);
         }
 
         [Test]
@@ -40,7 +53,11 @@ namespace Tests
             Assert.ThrowsAsync<TimeoutException>(() =>
                 _target.TryAsync(() => generator.Next())
                     .WithMaxTryCount(times - 1)
-                    .OnTimeout(t => onTimeoutTriggered = true)
+                    .OnTimeout(t =>
+                    {
+                        Assert.IsFalse(t);
+                        onTimeoutTriggered = true;
+                    })
                     .Until(t => t));
             Assert.That(onTimeoutTriggered, Is.True);
         }
@@ -55,9 +72,29 @@ namespace Tests
             Assert.ThrowsAsync<TimeoutException>(() =>
                 _target.TryAsync(() => generator.Next())
                     .WithMaxTryCount(times - 1)
+                    .OnTimeout(async () =>
+                    {
+                        await Task.Delay(100);
+                        onTimeoutTriggered = true;
+                    })
+                    .Until(t => t));
+            Assert.That(onTimeoutTriggered, Is.True);
+        }
+
+        [Test]
+        [Timeout(1000)]
+        public void TestOnTimeoutAsyncWithNoParameterAsync()
+        {
+            var times = 5;
+            var generator = new Generator(times);
+            var onTimeoutTriggered = false;
+            Assert.ThrowsAsync<TimeoutException>(() =>
+                _target.TryAsync(() => generator.Next())
+                    .WithMaxTryCount(times - 1)
                     .OnTimeout(async t =>
                     {
                         await Task.Delay(100);
+                        Assert.IsFalse(t);
                         onTimeoutTriggered = true;
                     })
                     .Until(t => t));

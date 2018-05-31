@@ -162,7 +162,7 @@ namespace Retry
         /// <returns></returns>
         public AsyncRetryTask OnTimeout(Action timeoutAction)
         {
-            return new AsyncRetryTask { Task = Task.OnTimeout(t => timeoutAction()) };
+            return new AsyncRetryTask { Task = Task.OnTimeout(timeoutAction) };
         }
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace Retry
         /// <returns></returns>
         public AsyncRetryTask OnTimeout(Func<Task> timeoutAction)
         {
-            return new AsyncRetryTask { Task = Task.OnTimeout(t => timeoutAction()) };
+            return new AsyncRetryTask { Task = Task.OnTimeout(timeoutAction) };
         }
 
         /// <summary>
@@ -204,7 +204,7 @@ namespace Retry
         /// <returns></returns>
         public AsyncRetryTask OnFailure(Action failureAction)
         {
-            return new AsyncRetryTask { Task = Task.OnFailure(t => failureAction()) };
+            return new AsyncRetryTask { Task = Task.OnFailure(failureAction) };
         }
 
         /// <summary>
@@ -225,7 +225,7 @@ namespace Retry
         /// <returns></returns>
         public AsyncRetryTask OnFailure(Func<Task> failureAction)
         {
-            return new AsyncRetryTask { Task = Task.OnFailure(t => failureAction()) };
+            return new AsyncRetryTask { Task = Task.OnFailure(failureAction) };
         }
 
         /// <summary>
@@ -246,7 +246,7 @@ namespace Retry
         /// <returns></returns>
         public AsyncRetryTask OnSuccess(Action successAction)
         {
-            return new AsyncRetryTask { Task = Task.OnSuccess(t => successAction()) };
+            return new AsyncRetryTask { Task = Task.OnSuccess(successAction) };
         }
 
         /// <summary>
@@ -267,7 +267,7 @@ namespace Retry
         /// <returns></returns>
         public AsyncRetryTask OnSuccess(Func<Task> successAction)
         {
-            return new AsyncRetryTask { Task = Task.OnSuccess(t => successAction()) };
+            return new AsyncRetryTask { Task = Task.OnSuccess(successAction) };
         }
 
         /// <summary>
