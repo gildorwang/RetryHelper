@@ -10,6 +10,12 @@ namespace Tests
     public sealed class RetryHelperTest
     {
         public const int Tolerance = 70;
+
+        /// <summary>
+        /// Async version is less precise.
+        /// </summary>
+        public const int AsyncTolerance = 200;
+
         public const int Interval = 100;
 
         public static long MeasureTime(Action action)

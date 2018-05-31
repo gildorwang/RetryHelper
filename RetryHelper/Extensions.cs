@@ -72,6 +72,7 @@ namespace Retry
         /// <param name="action">The <see cref="Action"/> instance.</param>
         /// <param name="value">The return value of the <see cref="Func{TResult}"/> instance.</param>
         /// <returns></returns>
+        [Obsolete("This method will become internal in a future version.")]
         public static Func<TResult> MakeFunc<TResult>(this Action action, TResult value = default(TResult))
         {
             if (action == null)

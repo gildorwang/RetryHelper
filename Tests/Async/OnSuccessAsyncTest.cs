@@ -19,13 +19,46 @@ namespace Tests
 
         [Test]
         [Timeout(1000)]
+        public async Task TestOnSuccessWithNoParameterAsync()
+        {
+            var times = 5;
+            var generator = new Generator(times);
+            var onSuccessTriggered = false;
+            await _target.TryAsync(() => generator.Next())
+                .OnSuccess(() => onSuccessTriggered = true)
+                .Until(t => t);
+            Assert.That(onSuccessTriggered, Is.True);
+        }
+
+        [Test]
+        [Timeout(1000)]
         public async Task TestOnSuccessAfterFiveTimesAsync()
         {
             var times = 5;
             var generator = new Generator(times);
             var onSuccessTriggered = false;
             await _target.TryAsync(() => generator.Next())
-                .OnSuccess(t => onSuccessTriggered = true)
+                .OnSuccess(t => {
+                    Assert.IsTrue(t);
+                    onSuccessTriggered = true;
+                })
+                .Until(t => t);
+            Assert.That(onSuccessTriggered, Is.True);
+        }
+
+        [Test]
+        [Timeout(1000)]
+        public async Task TestOnSuccessAsyncWithNoParameterAsync()
+        {
+            var times = 5;
+            var generator = new Generator(times);
+            var onSuccessTriggered = false;
+            await _target.TryAsync(() => generator.Next())
+                .OnSuccess(async () =>
+                {
+                    await Task.Delay(100);
+                    onSuccessTriggered = true;
+                })
                 .Until(t => t);
             Assert.That(onSuccessTriggered, Is.True);
         }
@@ -41,6 +74,7 @@ namespace Tests
                 .OnSuccess(async t =>
                 {
                     await Task.Delay(100);
+                    Assert.IsTrue(t);
                     onSuccessTriggered = true;
                 })
                 .Until(t => t);
@@ -80,7 +114,7 @@ namespace Tests
         }
 
         [Test]
-        [Timeout(1000)]
+        [Timeout(4000)]
         public async Task TestMultipleOnSuccessAsync()
         {
             var times = 5;
@@ -88,10 +122,19 @@ namespace Tests
             var onSuccessTriggered1 = false;
             var onSuccessTriggered2 = false;
             await _target.TryAsync(() => generator.Next())
-                   .OnSuccess(t => onSuccessTriggered1 = true)
-                   .OnSuccess(t => onSuccessTriggered2 = true)
+                   .OnSuccess(async t =>
+                   {
+                       await Task.Delay(400);
+                       onSuccessTriggered1 = true;
+                   })
+                   .OnSuccess(async t =>
+                   {
+                       await Task.Delay(50);
+                       onSuccessTriggered2 = true;
+                   })
                    .Until(t => t);
             Assert.That(onSuccessTriggered1, Is.True);
+            Console.WriteLine("AA");
             Assert.That(onSuccessTriggered2, Is.True);
         }
     }

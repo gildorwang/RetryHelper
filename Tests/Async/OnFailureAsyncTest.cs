@@ -20,6 +20,19 @@ namespace Tests
 
         [Test]
         [Timeout(1000)]
+        public async Task TestOnFailureWithNoParameter()
+        {
+            var times = 5;
+            var generator = new Generator(times);
+            var onFailureTriggered = 0;
+            await _target.TryAsync(() => generator.Next())
+                .OnFailure(() => onFailureTriggered++)
+                .Until(t => t);
+            Assert.That(onFailureTriggered, Is.EqualTo(times));
+        }
+
+        [Test]
+        [Timeout(1000)]
         public async Task TestOnFailureAfterFiveTimesAsync()
         {
             var times = 5;
@@ -58,13 +71,26 @@ namespace Tests
 
         [Test]
         [Timeout(1000)]
+        public async Task TestOnFailureAsyncWithNoParameterAsync()
+        {
+            var times = 5;
+            var generator = new Generator(times);
+            var onFailureTriggered = 0;
+            await _target.TryAsync(() => generator.Next())
+                .OnFailure(async () => await Task.Run(() => onFailureTriggered++))
+                .Until(t => t);
+            Assert.That(onFailureTriggered, Is.EqualTo(times));
+        }
+
+        [Test]
+        [Timeout(1000)]
         public async Task TestOnFailureShouldNotFireIfSucceedAtFirstTimeAsync()
         {
             var times = 0;
             var generator = new Generator(times);
             var onFailureTriggered = 0;
             await _target.TryAsync(() => generator.Next())
-                .OnFailure(t => onFailureTriggered++)
+                .OnFailure(() => onFailureTriggered++)
                 .Until(t => t);
             Assert.That(onFailureTriggered, Is.EqualTo(0));
         }
@@ -108,7 +134,7 @@ namespace Tests
         }
 
         [Test]
-        [Timeout(1000)]
+        [Timeout(4000)]
         public async Task TestMultipleOnFailureAsync()
         {
             var times = 5;
@@ -116,13 +142,15 @@ namespace Tests
             var onFailureTriggered1 = 0;
             var onFailureTriggered2 = 0;
             await _target.TryAsync(() => generator.Next())
-                .OnFailure(t =>
+                .OnFailure(async t =>
                 {
+                    await Task.Delay(500);
                     Assert.That(t, Is.False);
                     onFailureTriggered1++;
                 })
-                .OnFailure(t =>
+                .OnFailure(async t =>
                 {
+                    await Task.Delay(50);
                     Assert.That(t, Is.False);
                     onFailureTriggered2++;
                 })

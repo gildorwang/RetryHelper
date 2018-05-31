@@ -8,12 +8,24 @@ namespace Retry
     /// </summary>
     public class RetryTask
     {
+        /// <summary>
+        /// The default time interval to wait between each retry attempt. Defaults to 500 ms.
+        /// </summary>
         public static readonly TimeSpan DefaultTryInterval = TimeSpan.FromMilliseconds(500);
 
+        /// <summary>
+        /// The default max try time limit. Defaults to unlimited (<c>TimeSpan.MaxValue</c>).
+        /// </summary>
         public static readonly TimeSpan DefaultMaxTryTime = TimeSpan.MaxValue;
 
+        /// <summary>
+        /// The default max try count limit. Defaults to unlimited (<c>Int32.MaxValue</c>).
+        /// </summary>
         public static readonly int DefaultMaxTryCount = int.MaxValue;
 
+        /// <summary>
+        /// The underlying parameterized <see cref="RetryTask{T}"/> instance.
+        /// </summary>
         protected RetryTask<int> Task;
 
         /// <summary>
@@ -23,7 +35,9 @@ namespace Retry
         /// <param name="traceSource">The trace source.</param>
         public RetryTask(Action task, TraceSource traceSource)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             Task = new RetryTask<int>(task.MakeFunc<int>(), traceSource);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /// <summary>
@@ -37,10 +51,15 @@ namespace Retry
         public RetryTask(Action task, TraceSource traceSource,
             TimeSpan maxTryTime, int maxTryCount, TimeSpan tryInterval)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             Task = new RetryTask<int>(task.MakeFunc<int>(), traceSource,
                 maxTryTime, maxTryCount, tryInterval);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RetryTask"/> class.
+        /// </summary>
         protected RetryTask()
         {
         }
@@ -68,7 +87,7 @@ namespace Retry
         }
 
         /// <summary>
-        ///   Retries the task until the specified exception is not thrown during the task execution.
+        ///   Retries the task until the specified exception or any derived exception is not thrown during the task execution.
         ///   Any other exception thrown is re-thrown.
         /// </summary>
         /// <returns></returns>
@@ -76,6 +95,17 @@ namespace Retry
         public void UntilNoException<TException>()
         {
             Task.UntilNoException<TException>();
+        }
+
+        /// <summary>
+        ///   Retries the task until the specified exception or any derived exception is not thrown during the task execution.
+        ///   Any other exception thrown is re-thrown.
+        /// </summary>
+        /// <returns></returns>
+        [DebuggerNonUserCode]
+        public void UntilNoException(Type exceptionType)
+        {
+            Task.UntilNoException(exceptionType);
         }
 
         /// <summary>
@@ -135,7 +165,18 @@ namespace Retry
         /// <returns></returns>
         public RetryTask OnTimeout(Action timeoutAction)
         {
-            return new RetryTask { Task = Task.OnTimeout(t => timeoutAction()) };
+            return new RetryTask { Task = Task.OnTimeout(timeoutAction) };
+        }
+
+        /// <summary>
+        /// Configures the action to take when the try action timed out before success. 
+        /// The total count of attempts is passed as parameter to the <paramref name="timeoutAction"/>.
+        /// </summary>
+        /// <param name="timeoutAction">The action to take on timeout.</param>
+        /// <returns></returns>
+        public RetryTask OnTimeout(Action<int> timeoutAction)
+        {
+            return new RetryTask { Task = Task.OnTimeout((result, tryCount) => timeoutAction(tryCount)) };
         }
 
         /// <summary>
@@ -145,12 +186,12 @@ namespace Retry
         /// <returns></returns>
         public RetryTask OnFailure(Action failureAction)
         {
-            return new RetryTask { Task = Task.OnFailure(t => failureAction()) };
+            return new RetryTask { Task = Task.OnFailure(failureAction) };
         }
 
         /// <summary>
         /// Configures the action to take after each time the try action fails and before the next try. 
-        /// The total count of try that has attempted will be passed as parameters.
+        /// The total count of attempts so far is passed as parameter to the <paramref name="failureAction"/>.
         /// </summary>
         /// <param name="failureAction">The action to take on failure.</param>
         /// <returns></returns>
@@ -166,7 +207,19 @@ namespace Retry
         /// <returns></returns>
         public RetryTask OnSuccess(Action successAction)
         {
-            return new RetryTask { Task = Task.OnSuccess(t => successAction()) };
+            return new RetryTask { Task = Task.OnSuccess(successAction) };
+        }
+
+        /// <summary>
+        /// Configures the action to take when the try action succeeds.
+        /// The total count of attempts is passed as parameter to the <paramref name="successAction"/>.
+        /// This count includes the final successful one.
+        /// </summary>
+        /// <param name="successAction">The action to take on success.</param>
+        /// <returns></returns>
+        public RetryTask OnSuccess(Action<int> successAction)
+        {
+            return new RetryTask { Task = Task.OnSuccess((result, tryCount) => successAction(tryCount)) };
         }
     }
 }

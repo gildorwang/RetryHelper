@@ -9,12 +9,9 @@ namespace Retry
     /// </summary>
     public class AsyncRetryTask
     {
-        public static readonly TimeSpan DefaultTryInterval = TimeSpan.FromMilliseconds(500);
-
-        public static readonly TimeSpan DefaultMaxTryTime = TimeSpan.MaxValue;
-
-        public static readonly int DefaultMaxTryCount = int.MaxValue;
-
+        /// <summary>
+        /// The underlying parameterized <see cref="AsyncRetryTask{T}"/> instance.
+        /// </summary>
         protected AsyncRetryTask<int> Task;
 
         /// <summary>
@@ -42,6 +39,9 @@ namespace Retry
                 maxTryTime, maxTryCount, tryInterval);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AsyncRetryTask"/> class.
+        /// </summary>
         protected AsyncRetryTask()
         {
         }
@@ -81,7 +81,7 @@ namespace Retry
         }
 
         /// <summary>
-        ///   Retries the task until the specified exception is not thrown during the task execution.
+        ///   Retries the task until the specified exception or any derived exception is not thrown during the task execution.
         ///   Any other exception thrown is re-thrown.
         /// </summary>
         /// <returns></returns>
@@ -89,6 +89,17 @@ namespace Retry
         public async Task UntilNoException<TException>()
         {
             await Task.UntilNoException<TException>();
+        }
+
+        /// <summary>
+        ///   Retries the task until the specified exception or any derived exception is not thrown during the task execution.
+        ///   Any other exception thrown is re-thrown.
+        /// </summary>
+        /// <returns></returns>
+        [DebuggerNonUserCode]
+        public async Task UntilNoException(Type exceptionType)
+        {
+            await Task.UntilNoException(exceptionType);
         }
 
         /// <summary>
@@ -148,7 +159,7 @@ namespace Retry
         /// <returns></returns>
         public AsyncRetryTask OnTimeout(Action timeoutAction)
         {
-            return new AsyncRetryTask { Task = Task.OnTimeout(t => timeoutAction()) };
+            return new AsyncRetryTask { Task = Task.OnTimeout(timeoutAction) };
         }
 
         /// <summary>
@@ -169,7 +180,7 @@ namespace Retry
         /// <returns></returns>
         public AsyncRetryTask OnTimeout(Func<Task> timeoutAction)
         {
-            return new AsyncRetryTask { Task = Task.OnTimeout(t => timeoutAction()) };
+            return new AsyncRetryTask { Task = Task.OnTimeout(timeoutAction) };
         }
 
         /// <summary>
@@ -190,7 +201,7 @@ namespace Retry
         /// <returns></returns>
         public AsyncRetryTask OnFailure(Action failureAction)
         {
-            return new AsyncRetryTask { Task = Task.OnFailure(t => failureAction()) };
+            return new AsyncRetryTask { Task = Task.OnFailure(failureAction) };
         }
 
         /// <summary>
@@ -211,7 +222,7 @@ namespace Retry
         /// <returns></returns>
         public AsyncRetryTask OnFailure(Func<Task> failureAction)
         {
-            return new AsyncRetryTask { Task = Task.OnFailure(t => failureAction()) };
+            return new AsyncRetryTask { Task = Task.OnFailure(failureAction) };
         }
 
         /// <summary>
@@ -232,7 +243,7 @@ namespace Retry
         /// <returns></returns>
         public AsyncRetryTask OnSuccess(Action successAction)
         {
-            return new AsyncRetryTask { Task = Task.OnSuccess(t => successAction()) };
+            return new AsyncRetryTask { Task = Task.OnSuccess(successAction) };
         }
 
         /// <summary>
@@ -253,7 +264,7 @@ namespace Retry
         /// <returns></returns>
         public AsyncRetryTask OnSuccess(Func<Task> successAction)
         {
-            return new AsyncRetryTask { Task = Task.OnSuccess(t => successAction()) };
+            return new AsyncRetryTask { Task = Task.OnSuccess(successAction) };
         }
 
         /// <summary>
