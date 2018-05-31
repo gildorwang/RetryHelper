@@ -35,7 +35,9 @@ namespace Retry
         /// <param name="traceSource">The trace source.</param>
         public RetryTask(Action task, TraceSource traceSource)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             Task = new RetryTask<int>(task.MakeFunc<int>(), traceSource);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /// <summary>
@@ -49,8 +51,10 @@ namespace Retry
         public RetryTask(Action task, TraceSource traceSource,
             TimeSpan maxTryTime, int maxTryCount, TimeSpan tryInterval)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             Task = new RetryTask<int>(task.MakeFunc<int>(), traceSource,
                 maxTryTime, maxTryCount, tryInterval);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /// <summary>
